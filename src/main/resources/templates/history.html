@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#F6F8FC">
+        <title>Histórico de Conversões</title>
+        <link rel="icon" href="data:,">
+        <script>
+            try {
+                const saved = localStorage.getItem('currency-theme');
+                document.documentElement.dataset.theme = saved ||
+                    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.lang = localStorage.getItem('currency-language') === 'en' ? 'en' : 'pt-BR';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'light';
+            }
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <script th:src="@{/js/app.js}" defer></script>
+    </head>
+    <body>
+        <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" th:href="@{/}" aria-label="Conversor de Moedas">
+                    <span class="brand-mark" aria-hidden="true">$</span>
+                    <span data-i18n="brand">Conversor de Moedas</span>
+                </a>
+                <nav class="nav" id="mainNav" aria-label="Navegação principal">
+                    <a th:href="@{/}" data-i18n="navConvert">Converter</a>
+                    <a class="active" th:href="@{/historico}" data-i18n="navHistory" aria-current="page">Histórico</a>
+                    <a th:href="@{/swagger-ui.html}">Swagger</a>
+                    <a th:href="@{/sobre}" data-i18n="navAbout">Sobre</a>
+                </nav>
+                <div class="header-controls">
+                    <label class="sr-only" for="languageSelect" data-i18n="languageLabel">Idioma</label>
+                    <select id="languageSelect" class="language-select" aria-label="Idioma">
+                        <option value="pt-BR">PT-BR</option>
+                        <option value="en">EN</option>
+                    </select>
+                    <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+                        <span class="moon-icon" aria-hidden="true">☾</span>
+                        <span class="sun-icon" aria-hidden="true">☀</span>
+                    </button>
+                    <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+                        <span aria-hidden="true">☰</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="page history-page" id="main">
+            <div class="history-header">
+                <div>
+                    <p class="eyebrow">
+                        <span class="status-dot"></span>
+                        <span data-i18n="activityLabel">ATIVIDADE</span>
+                    </p>
+                    <h1 id="historyTitle" data-i18n="historyTitle">Histórico de conversões</h1>
+                    <p class="page-subtitle" data-i18n="historySubtitle">Todas as suas conversões, da mais recente para a mais antiga.</p>
+                </div>
+                <form id="clearHistoryForm" th:action="@{/historico/limpar}" method="post">
+                    <button class="danger-button" type="submit" th:disabled="${#lists.isEmpty(history)}" data-i18n="clearHistory">Limpar histórico</button>
+                </form>
+            </div>
+            <div class="alert success" th:if="${message}" data-i18n="clearedMessage">Histórico limpo com sucesso.</div>
+            <section class="card history-card" th:if="${!#lists.isEmpty(history)}">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="tableDate">Data</th>
+                                <th data-i18n="tableOriginal">Valor original</th>
+                                <th data-i18n="tablePair">Moedas</th>
+                                <th data-i18n="tableRate">Taxa de câmbio</th>
+                                <th data-i18n="tableResult">Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${history}" th:attr="data-source=${item.sourceCurrency()},data-target=${item.targetCurrency()},data-original=${item.originalAmount()},data-value=${item.convertedAmount()},data-rate=${item.rate()},data-date=${item.quoteDate()},data-created=${item.createdAt()}">
+                                <td class="history-created" data-label="Data"></td>
+                                <td class="history-original" data-label="Valor original"></td>
+                                <td class="history-pair" data-label="Moedas"></td>
+                                <td class="history-rate" data-label="Taxa de câmbio"></td>
+                                <td class="history-result" data-label="Resultado"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="card empty-state" th:if="${#lists.isEmpty(history)}">
+                <div class="empty-icon" aria-hidden="true">↗</div>
+                <h2 data-i18n="historyEmptyTitle">Seu histórico começa aqui</h2>
+                <p data-i18n="historyEmptyText">As conversões realizadas no site ou pela API aparecerão nesta página.</p>
+                <a class="primary-link" th:href="@{/}" data-i18n="historyEmptyLink">Fazer uma conversão →</a>
+            </section>
+        </main>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    </body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#F6F8FC">
+        <title>Conversor de Moedas</title>
+        <link rel="icon" href="data:,">
+        <script>
+            try {
+                const saved = localStorage.getItem('currency-theme');
+                document.documentElement.dataset.theme = saved ||
+                    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.lang = localStorage.getItem('currency-language') === 'en' ? 'en' : 'pt-BR';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'light';
+            }
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <script th:src="@{/js/app.js}" defer></script>
+    </head>
+    <body>
+        <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" th:href="@{/}" aria-label="Conversor de Moedas">
+                    <span class="brand-mark" aria-hidden="true">$</span>
+                    <span data-i18n="brand">Conversor de Moedas</span>
+                </a>
+                <nav class="nav" id="mainNav" aria-label="Navegação principal">
+                    <a class="active" th:href="@{/}" data-i18n="navConvert" aria-current="page">Converter</a>
+                    <a th:href="@{/historico}" data-i18n="navHistory">Histórico</a>
+                    <a th:href="@{/swagger-ui.html}">Swagger</a>
+                    <a th:href="@{/sobre}" data-i18n="navAbout">Sobre</a>
+                </nav>
+                <div class="header-controls">
+                    <label class="sr-only" for="languageSelect" data-i18n="languageLabel">Idioma</label>
+                    <select id="languageSelect" class="language-select" aria-label="Idioma">
+                        <option value="pt-BR">PT-BR</option>
+                        <option value="en">EN</option>
+                    </select>
+                    <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+                        <span class="moon-icon" aria-hidden="true">☾</span>
+                        <span class="sun-icon" aria-hidden="true">☀</span>
+                    </button>
+                    <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+                        <span aria-hidden="true">☰</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="page" id="main">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        <span class="status-dot"></span>
+                        <span data-i18n="eyebrow">COTAÇÕES DE REFERÊNCIA</span>
+                    </p>
+                    <h1 data-i18n="pageTitle">Câmbio claro para cada decisão.</h1>
+                    <p class="page-subtitle" data-i18n="pageSubtitle">Converta moedas e acompanhe a evolução das cotações em um só lugar.</p>
+                </div>
+                <span class="heading-decoration" aria-hidden="true">↗</span>
+            </div>
+            <div class="dashboard-grid">
+                <section class="card converter-card" aria-labelledby="converterTitle">
+                    <div class="card-heading">
+                        <div class="card-icon" aria-hidden="true">⇄</div>
+                        <div>
+                            <h2 id="converterTitle" data-i18n="convertTitle">Converta suas moedas</h2>
+                            <p data-i18n="convertSubtitle">Consulte a cotação de referência em poucos segundos.</p>
+                        </div>
+                    </div>
+                    <form class="converter-form" id="converterForm" th:action="@{/converter}" th:object="${conversionRequest}" method="post">
+                        <div class="field">
+                            <label for="amount" data-i18n="amountLabel">Valor a converter</label>
+                            <div class="amount-input-wrap">
+                                <span id="amountSymbol" aria-hidden="true">R$</span>
+                                <input id="amount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="1000.00" th:field="*{amount}" required>
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></span>
+                        </div>
+                        <div class="currency-fields">
+                            <div class="field">
+                                <label for="sourceCurrency" data-i18n="fromLabel">Moeda de origem</label>
+                                <select id="sourceCurrency" th:field="*{sourceCurrency}">
+                                    <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
+                                </select>
+                                <span class="field-error" th:if="${#fields.hasErrors('sourceCurrency')}" th:errors="*{sourceCurrency}"></span>
+                            </div>
+                            <button class="swap-button" id="swapCurrencies" type="button" aria-label="Inverter moedas" title="Inverter moedas">⇄</button>
+                            <div class="field">
+                                <label for="targetCurrency" data-i18n="toLabel">Moeda de destino</label>
+                                <select id="targetCurrency" th:field="*{targetCurrency}">
+                                    <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
+                                </select>
+                                <span class="field-error" th:if="${#fields.hasErrors('targetCurrency')}" th:errors="*{targetCurrency}"></span>
+                            </div>
+                        </div>
+                        <button class="primary-button" id="convertButton" type="submit">
+                            <span data-i18n="convertButton">Converter agora</span>
+                            <span aria-hidden="true">→</span>
+                        </button>
+                        <p class="form-note">
+                            <span class="status-dot"></span>
+                            <span data-i18n="referenceNote">Cotações de referência · dados atualizados conforme a disponibilidade.</span>
+                        </p>
+                    </form>
+                    <div class="alert error" role="alert" th:if="${conversionError}" th:text="${conversionError}"></div>
+                    <section class="result-panel" id="resultPanel" aria-live="polite" th:if="${conversionResult}" th:attr="data-source=${conversionResult.sourceCurrency()},data-target=${conversionResult.targetCurrency()},data-original=${conversionResult.originalAmount()},data-converted=${conversionResult.convertedAmount()},data-rate=${conversionResult.rate()},data-date=${conversionResult.quoteDate()}">
+                        <div class="result-top">
+                            <span class="result-label" data-i18n="resultLabel">Conversão concluída</span>
+                            <button class="copy-button" id="copyResult" type="button" aria-label="Copiar resultado" title="Copiar resultado">▣</button>
+                        </div>
+                        <p class="result-pair" id="resultPair"></p>
+                        <strong class="result-value" id="resultValue"></strong>
+                        <p class="result-original" id="resultOriginal"></p>
+                        <div class="result-meta">
+                            <span>
+                                <span data-i18n="usedRate">Taxa de câmbio</span>
+                                <strong id="resultRate"></strong>
+                            </span>
+                            <span>
+                                <span data-i18n="quoteDate">Data de referência</span>
+                                <strong id="resultDate"></strong>
+                            </span>
+                        </div>
+                    </section>
+                </section>
+                <div class="insights-column">
+                    <section class="card rate-card" aria-labelledby="rateTitle">
+                        <div class="rate-heading">
+                            <div>
+                                <p class="section-kicker" data-i18n="marketOverview">VISÃO DO MERCADO</p>
+                                <h2 id="rateTitle" data-i18n="rateTitle">Cotação atual</h2>
+                            </div>
+                            <span class="live-badge">
+                                <span class="status-dot"></span>
+                                <span data-i18n="liveBadge">Atualizado</span>
+                            </span>
+                        </div>
+                        <p class="pair-label" id="pairLabel">BRL → USD</p>
+                        <div class="rate-line">
+                            <strong id="currentRate">—</strong>
+                            <span id="rateChange" class="rate-change"></span>
+                        </div>
+                        <p class="rate-caption" id="rateCaption" data-i18n="chartLoading">Carregando cotações...</p>
+                    </section>
+                    <section class="card chart-card" aria-labelledby="chartTitle">
+                        <div class="chart-heading">
+                            <div>
+                                <p class="section-kicker" data-i18n="trendLabel">TENDÊNCIA</p>
+                                <h2 id="chartTitle" data-i18n="chartTitle">Evolução da cotação</h2>
+                                <p class="chart-pair" id="chartPair">BRL → USD</p>
+                            </div>
+                            <div class="range-selector" role="group" aria-label="Período do gráfico">
+                                <button type="button" data-days="7" class="selected" aria-pressed="true">7D</button>
+                                <button type="button" data-days="30" aria-pressed="false">30D</button>
+                                <button type="button" data-days="90" aria-pressed="false">90D</button>
+                            </div>
+                        </div>
+                        <div class="chart-wrap" id="chartWrap">
+                            <div class="chart-y-axis" aria-hidden="true">
+                                <span id="chartYHigh"></span>
+                                <span id="chartYMid"></span>
+                                <span id="chartYLow"></span>
+                            </div>
+                            <svg id="rateChart" viewBox="0 0 640 230" preserveAspectRatio="none" role="img" aria-label="Evolução da cotação"></svg>
+                            <div class="chart-tooltip" id="chartTooltip" hidden></div>
+                            <div class="chart-message" id="chartMessage" hidden></div>
+                            <div class="chart-skeleton" id="chartSkeleton" aria-hidden="true"></div>
+                        </div>
+                        <div class="chart-footer">
+                            <span id="chartStart">—</span>
+                            <span id="chartEnd">—</span>
+                        </div>
+                        <details class="chart-data" hidden>
+                            <summary data-i18n="showValues">Ver valores</summary>
+                            <div class="chart-data-scroll">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th data-i18n="tableDate">Data</th>
+                                            <th data-i18n="rateValue">Taxa de câmbio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="chartDataBody"></tbody>
+                                </table>
+                            </div>
+                        </details>
+                    </section>
+                    <section class="card recent-card" aria-labelledby="recentTitle">
+                        <div class="recent-heading">
+                            <div>
+                                <p class="section-kicker" data-i18n="activityLabel">ATIVIDADE</p>
+                                <h2 id="recentTitle" data-i18n="recentTitle">Últimas conversões</h2>
+                            </div>
+                            <a class="text-link" th:href="@{/historico}" data-i18n="seeAll">Ver histórico completo →</a>
+                        </div>
+                        <div class="recent-list" th:if="${!#lists.isEmpty(recentHistory)}">
+                            <div class="recent-item" th:each="item : ${recentHistory}" th:attr="data-source=${item.sourceCurrency()},data-target=${item.targetCurrency()},data-value=${item.convertedAmount()},data-created=${item.createdAt()}">
+                                <div class="recent-icon" aria-hidden="true">$</div>
+                                <div class="recent-description">
+                                    <strong class="recent-pair"></strong>
+                                    <span class="recent-date"></span>
+                                </div>
+                                <strong class="recent-value"></strong>
+                            </div>
+                        </div>
+                        <div class="recent-empty" th:if="${#lists.isEmpty(recentHistory)}">
+                            <div class="empty-icon" aria-hidden="true">↗</div>
+                            <p data-i18n="recentEmpty">Suas conversões aparecerão aqui.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <p class="disclaimer" data-i18n="disclaimer">As cotações são referenciais e podem diferir das taxas praticadas por instituições financeiras.</p>
+        </main>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    </body>
+</html>
