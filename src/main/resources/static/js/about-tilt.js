@@ -16,6 +16,8 @@
   });
 
   const updateCard = (card, event) => {
+    const tiltLimit = Number(card.dataset.tiltLimit ?? options.tiltLimit);
+    const scale = Number(card.dataset.tiltScale ?? options.scale);
     const bounds = card.getBoundingClientRect();
     if (bounds.width === 0 || bounds.height === 0) {
       return;
@@ -27,15 +29,9 @@
     const horizontalOffset = (pointerX - 0.5) * 2 * direction;
     const verticalOffset = (pointerY - 0.5) * 2 * direction;
 
-    card.style.setProperty(
-      "--tilt-rotation-x",
-      `${(verticalOffset * options.tiltLimit).toFixed(2)}deg`,
-    );
-    card.style.setProperty(
-      "--tilt-rotation-y",
-      `${(horizontalOffset * options.tiltLimit).toFixed(2)}deg`,
-    );
-    card.style.setProperty("--tilt-scale", String(options.scale));
+    card.style.setProperty("--tilt-rotation-x", `${(verticalOffset * tiltLimit).toFixed(2)}deg`);
+    card.style.setProperty("--tilt-rotation-y", `${(horizontalOffset * tiltLimit).toFixed(2)}deg`);
+    card.style.setProperty("--tilt-scale", String(scale));
     card.style.setProperty("--tilt-perspective", `${options.perspective}px`);
     card.style.setProperty("--tilt-spot-x", `${(pointerX * 100).toFixed(2)}%`);
     card.style.setProperty("--tilt-spot-y", `${(pointerY * 100).toFixed(2)}%`);
