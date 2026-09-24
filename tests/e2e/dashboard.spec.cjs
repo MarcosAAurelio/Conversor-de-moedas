@@ -13,7 +13,9 @@ test("blocks an amount larger than the supported precision", async ({ page }) =>
   await page.getByLabel("Valor a converter").fill("10000000000000");
   await page.getByRole("button", { name: "Converter agora" }).click();
 
-  await expect(page.getByRole("status").filter({ hasText: "Informe um valor maior que zero." })).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Informe um valor maior que zero." }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
 });
 
