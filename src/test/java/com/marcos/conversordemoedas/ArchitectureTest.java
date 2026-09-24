@@ -5,6 +5,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
@@ -17,17 +18,27 @@ class ArchitectureTest {
     @ArchTest
     static final ArchRule controllersMustNotAccessRepositories = noClasses()
             .that().resideInAPackage("..controller..")
-            .should().dependOnClassesThat().resideInAPackage("..repository..");
+            .should().dependOnClassesThat().resideInAPackage("..repository..")
+            .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule servicesMustNotDependOnControllers = noClasses()
             .that().resideInAPackage("..service..")
-            .should().dependOnClassesThat().resideInAPackage("..controller..");
+            .should().dependOnClassesThat().resideInAPackage("..controller..")
+            .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule repositoriesMustNotDependOnServices = noClasses()
             .that().resideInAPackage("..repository..")
-            .should().dependOnClassesThat().resideInAPackage("..service..");
+            .should().dependOnClassesThat().resideInAPackage("..service..")
+            .allowEmptyShould(true);
+
+    @ArchTest
+    static void requiredApplicationLayersExist(JavaClasses classes) {
+        assertTrue(classes.stream().anyMatch(type -> type.getPackageName().equals("com.marcos.conversordemoedas.controller")));
+        assertTrue(classes.stream().anyMatch(type -> type.getPackageName().equals("com.marcos.conversordemoedas.service")));
+        assertTrue(classes.stream().anyMatch(type -> type.getPackageName().equals("com.marcos.conversordemoedas.repository")));
+    }
 
     @ArchTest
     static final ArchRule applicationPackagesMustNotContainCycles = slices()
