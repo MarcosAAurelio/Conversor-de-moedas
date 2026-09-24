@@ -63,6 +63,7 @@
                 </div>
                 <form id="clearHistoryForm" th:action="@{/historico/limpar}" method="post">
                     <button class="danger-button" type="submit" th:disabled="${#lists.isEmpty(history)}" data-i18n="clearHistory">Limpar histórico</button>
+                    <span class="sr-only" id="clearHistoryStatus" role="status" aria-live="polite"></span>
                 </form>
             </div>
             <div class="alert success" th:if="${message}" data-i18n="clearedMessage">Histórico limpo com sucesso.</div>

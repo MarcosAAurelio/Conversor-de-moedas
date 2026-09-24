@@ -1,5 +1,7 @@
 :root {
     color-scheme: light;
+    --motion-enter:cubic-bezier(.16,1,.3,1);
+    --motion-state:cubic-bezier(.22,.61,.36,1);
     --bg-page:#F6F8FC;
     --bg-surface:#FFFFFF;
     --bg-muted:#EEF3F9;
@@ -71,7 +73,7 @@ h1,h2,p {
 }
 
 html,body,.topbar,.card,.field select,.amount-input-wrap,.icon-button,.language-toggle,.primary-button,.swap-button,.danger-button,.result-panel {
-    transition:background-color .25s,color .25s,border-color .25s,box-shadow .25s
+    transition:background-color .25s var(--motion-state),color .25s var(--motion-state),border-color .25s var(--motion-state),box-shadow .25s var(--motion-state)
 }
 
 .sr-only {
@@ -172,7 +174,7 @@ html,body,.topbar,.card,.field select,.amount-input-wrap,.icon-button,.language-
     font-size:.78em;
     font-weight:800;
     opacity:.78;
-    transition:transform .18s ease,opacity .18s ease
+    transition:transform .18s var(--motion-state),opacity .18s var(--motion-state)
 }
 
 @media(hover:hover) and (pointer:fine) {
@@ -221,7 +223,7 @@ html,body,.topbar,.card,.field select,.amount-input-wrap,.icon-button,.language-
     font-weight:800;
     letter-spacing:.035em;
     line-height:1;
-    transition:background-color .18s ease,color .18s ease,box-shadow .18s ease
+    transition:background-color .18s var(--motion-state),color .18s var(--motion-state),box-shadow .18s var(--motion-state)
 }
 
 .language-option:hover {
@@ -470,7 +472,7 @@ h1 {
 
 .swap-button.spinning {
     transform:rotate(180deg);
-    transition:transform .3s
+    transition:transform .3s var(--motion-state)
 }
 
 .primary-button,.primary-link {
@@ -1023,6 +1025,10 @@ h1 {
 }
 
 .danger-button {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
     height:42px;
     padding:0 17px;
     border:1px solid var(--border-color);
@@ -1041,6 +1047,20 @@ h1 {
 .danger-button:disabled {
     opacity:.45;
     cursor:not-allowed
+}
+
+.danger-button[aria-busy="true"] {
+    cursor:wait
+}
+
+.danger-button[aria-busy="true"]:before {
+    content:"";
+    width:13px;
+    height:13px;
+    border:2px solid currentColor;
+    border-top-color:transparent;
+    border-radius:50%;
+    animation:spin .7s linear infinite
 }
 
 .history-card {
@@ -1158,7 +1178,7 @@ td {
     background:transparent;
     cursor:zoom-in;
     box-shadow:0 12px 24px -17px var(--shadow-color);
-    transition:transform .2s ease,box-shadow .2s ease
+    transition:transform .2s var(--motion-state),box-shadow .2s var(--motion-state)
 }
 
 .about-avatar-button:hover {
@@ -1222,7 +1242,7 @@ td {
     font-size:.91rem;
     font-weight:800;
     box-shadow:0 12px 24px -16px var(--primary);
-    transition:background-color .18s ease,transform .18s ease,box-shadow .18s ease
+    transition:background-color .18s var(--motion-state),transform .18s var(--motion-state),box-shadow .18s var(--motion-state)
 }
 
 .portfolio-cta:hover {
@@ -1250,12 +1270,39 @@ html[data-theme="dark"] .portfolio-cta {
     border:0;
     border-radius:18px;
     background:transparent;
-    color:var(--text-primary)
+    color:var(--text-primary);
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .18s var(--motion-enter),transform .18s var(--motion-enter),display .18s allow-discrete,overlay .18s allow-discrete
+}
+
+.photo-dialog[open] {
+    opacity:1;
+    transform:translateY(0)
+}
+
+@starting-style {
+    .photo-dialog[open] {
+        opacity:0;
+        transform:translateY(8px)
+    }
 }
 
 .photo-dialog::backdrop {
     background:rgba(5,10,22,.82);
-    backdrop-filter:blur(5px)
+    backdrop-filter:blur(5px);
+    opacity:0;
+    transition:opacity .18s var(--motion-state)
+}
+
+.photo-dialog[open]::backdrop {
+    opacity:1
+}
+
+@starting-style {
+    .photo-dialog[open]::backdrop {
+        opacity:0
+    }
 }
 
 .photo-dialog-image {
@@ -1597,6 +1644,7 @@ html[data-theme="dark"] .portfolio-cta {
     }
     *,*:before,*:after {
         animation-duration:.01ms!important;
+        animation-iteration-count:1!important;
         transition-duration:.01ms!important
     }
 }
@@ -1606,45 +1654,39 @@ html[data-theme="dark"] .portfolio-cta {
 }
 
 ::view-transition-old(root) {
-    animation:page-exit 140ms cubic-bezier(.23,1,.32,1) both
+    animation:page-exit 140ms var(--motion-state) both
 }
 
 ::view-transition-new(root) {
-    animation:page-enter 240ms cubic-bezier(.23,1,.32,1) both
+    animation:page-enter 240ms var(--motion-enter) both
 }
 
 @keyframes page-exit {
     to {
         opacity:0;
-        transform:translateY(-6px) scale(.995)
+        transform:translateY(-4px);
+        filter:blur(2px)
     }
 }
 
 @keyframes page-enter {
     from {
         opacity:0;
-        transform:translateY(12px) scale(.99)
+        transform:translateY(8px);
+        filter:blur(4px)
     }
     to {
         opacity:1;
-        transform:translateY(0) scale(1)
+        transform:translateY(0);
+        filter:blur(0)
     }
 }
 
 @media(prefers-reduced-motion:reduce) {
-    ::view-transition-old(root) {
-        animation:page-fade-out 100ms ease-out both
+::view-transition-old(root) {
+        animation:none!important
     }
     ::view-transition-new(root) {
-        animation:page-fade-in 120ms ease-out both
+        animation:none!important
     }
-}
-
-@keyframes page-fade-out {
-    to {opacity:0}
-}
-
-@keyframes page-fade-in {
-    from {opacity:0}
-    to {opacity:1}
 }
