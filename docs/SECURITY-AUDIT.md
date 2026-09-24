@@ -61,7 +61,7 @@ Fonte: [OWASP HTTP Security Response Headers Cheat Sheet](https://cheatsheetseri
 
 **Severidade:** baixa no demo local; reduz investigacao e deteccao de abuso.  
 **Evidencia:** `GlobalExceptionHandler` retornava erro generico para excecoes inesperadas sem registrar a causa. Nao foram enviados erros propositais ao servidor para validar alerta.  
-**Estado:** encaminhado para a Issue de observabilidade. A mensagem HTTP generica evita devolver detalhes internos ao cliente; um destino de logs e alertas ainda precisa ser configurado.
+**Correcao nesta branch:** a Issue #3 adiciona OpenTelemetry e captura de excecoes com Sentry. `SENTRY_DSN` vazio desativa o envio por padrao; os exportadores OTLP tambem ficam desativados ate configurar endpoint e protocolo. A mensagem HTTP generica continua sem detalhes internos. Nenhuma credencial foi fornecida, entao a entrega a Sentry, Datadog ou New Relic nao foi verificada nesta auditoria.
 
 ### SEC-08 — Tomcat 11.0.24 continha tres advisories criticos
 
@@ -73,11 +73,13 @@ Fontes: [GHSA-9xv2-5v5q-p794 / CVE-2026-65905](https://osv.dev/vulnerability/GHS
 
 **Resultado apos a correcao:** OSV-Scanner 2.6.0, chamado com `scan source --lockfile pom.xml --data-source native`, identificou 144 componentes na resolucao Maven e reportou `No issues found`. Nove entradas locais ou sem ecossistema scannable foram filtradas pelo scanner. O resultado e da base de advisories consultada em 2026-09-24 e nao demonstra que o codigo seja livre de vulnerabilidades.
 
-### SEC-09 — Caminho inexistente responde 500 em vez de 404
+**Verificacao da arvore JavaScript:** `npm audit` reportou duas vulnerabilidades moderadas transitivas em `qs`/`typed-rest-client`; `npm audit fix` aplicou atualizacoes compatíveis. Em seguida, `npm audit` reportou zero vulnerabilidades e OSV-Scanner 2.6.0 identificou 585 pacotes no `package-lock.json` e reportou `No issues found` em 2026-09-24. Isso cobre apenas advisories conhecidos nas bases consultadas.
+
+### SEC-09 — Caminho inexistente respondia 500 em vez de 404
 
 **Severidade:** baixa; nao e acesso indevido, mas mascara recurso ausente como falha interna.  
 **Evidencia:** depois de desativar o console, o GET local `/h2-console` retornou 500. `GlobalExceptionHandler` captura `NoResourceFoundException` pelo handler generico de `Exception`. O endpoint nao expõe dados nem torna o console acessivel.  
-**Estado:** Issue #8 criada para devolver 404 e adicionar teste de regressao; este achado ainda nao esta corrigido nesta branch.
+**Correcao:** Issue #8 e PR #10 tratam `NoResourceFoundException` como 404. O teste de regressao verifica que `/h2-console` nao responde 500 quando o console esta desativado.
 
 ## OWASP Top 10:2025
 
@@ -85,14 +87,14 @@ Fontes: [GHSA-9xv2-5v5q-p794 / CVE-2026-65905](https://osv.dev/vulnerability/GHS
 | --- | --- |
 | A01 Broken Access Control | Acesso global sem identidade e intencional apenas no escopo local; rever antes de compartilhar a aplicacao. |
 | A02 Security Misconfiguration | Console H2 ligado por padrao e cabecalhos ausentes foram corrigidos neste PR. |
-| A03 Software Supply Chain Failures | Dependencias centrais antigas foram atualizadas; a resolucao Maven do OSV-Scanner nao reportou advisories conhecidos apos as atualizacoes. |
+| A03 Software Supply Chain Failures | A arvore Maven e o lockfile npm nao reportaram advisories conhecidos apos as atualizacoes; scanners nao provam ausencia de vulnerabilidades. |
 | A04 Cryptographic Failures | Nenhuma criptografia propria foi identificada nos arquivos revisados. TLS de producao nao foi avaliado. |
 | A05 Injection | Moedas sao verificadas contra uma lista fixa e o acesso a dados usa JPA. Nenhuma injecao foi confirmada; fuzzing nao foi executado. |
 | A06 Insecure Design | Historico global e politica aceita para uso local, mas nao e um desenho de isolamento multiusuario. |
 | A07 Authentication Failures | Nao existe autenticacao; coerente apenas com o uso local demonstrativo informado pelo proprietario. |
 | A08 Software or Data Integrity Failures | Nenhum fluxo de upload, atualizacao automatica ou artefato nao confiavel foi encontrado na superficie revista. |
-| A09 Security Logging and Alerting Failures | Falhas inesperadas nao eram registradas; pendente junto a observabilidade. |
-| A10 Mishandling of Exceptional Conditions | A resposta inesperada era generica, sem stack trace ao cliente, mas sem log server-side; timeouts externos foram adicionados. Caminho estatico inexistente ainda retorna 500; Issue #8 cobre essa correcao. |
+| A09 Security Logging and Alerting Failures | Captura de excecoes via Sentry e exportacao OTLP foram adicionadas, ambas opt-in; sem credenciais, a entrega nao foi verificada. |
+| A10 Mishandling of Exceptional Conditions | Resposta inesperada e generica; `/h2-console` desativado agora retorna 404 pelo tratamento corrigido na Issue #8. Timeouts externos foram adicionados. |
 
 Fonte de categorias: [OWASP Top 10:2025](https://top10.owasp.org/2025/0x00_2025-Introduction/).
 
@@ -102,7 +104,7 @@ Fonte de categorias: [OWASP Top 10:2025](https://top10.owasp.org/2025/0x00_2025-
 | --- | --- |
 | Spoofing | Nao ha contas, identidade ou tokens nesta versao. Qualquer cliente com acesso ao servidor e tratado da mesma forma; nao foi testado fora do loopback. |
 | Tampering | Conversao e limpeza alteram o historico global. A limpeza e uma acao de escrita sem autenticacao, aceite apenas para o uso local. O console H2 agora e opt-in. |
-| Repudiation | O historico armazena data/hora, mas nao ator; logs de seguranca nao estavam configurados. Sem identidade local, nao ha atribuicao individual. |
+| Repudiation | O historico armazena data/hora, mas nao ator; nao ha identidade local para atribuicao individual. Sentry pode receber excecoes quando configurado, mas nao substitui trilha de auditoria de acoes. |
 | Information Disclosure | O historico pode ser lido por qualquer cliente que alcancar a aplicacao. Estava vazio no probe. Acesso global foi confirmado como esperado localmente. |
 | Denial of Service | Historico cresce sem limite e o cliente externo nao tinha timeout; o timeout foi corrigido. Nao houve teste de carga. |
 | Elevation of Privilege | Nao ha papeis ou fronteira de privilegio de usuario. Com console H2 explicitamente habilitado, o operador local pode alterar dados diretamente; o recurso esta desabilitado por padrao. |
@@ -119,11 +121,23 @@ Versoes verificadas em fontes oficiais em 2026-09-24. As dependencias transitiva
 | springdoc-openapi WebMVC UI | 2.6.0 | 3.1.1 |
 | H2 | 2.2.224 (BOM anterior) | 2.5.250 |
 | Apache Tomcat embed (transitivo) | 11.0.24 | 11.0.26 |
+| Spring Boot Actuator / OpenTelemetry starters | — | 4.1.1 (BOM Spring Boot) |
+| Micrometer OTLP registry | — | [1.17.1](https://central.sonatype.com/artifact/io.micrometer/micrometer-registry-otlp/1.17.1) |
+| Sentry Spring Boot 4 | — | [8.58.0](https://central.sonatype.com/artifact/io.sentry/sentry-spring-boot-4-starter/8.58.0) |
+| ArchUnit JUnit 5 | — | [1.5.0](https://central.sonatype.com/artifact/com.tngtech.archunit/archunit-junit5/1.5.0) |
+| JaCoCo Maven plugin | — | [0.8.15](https://github.com/jacoco/jacoco/releases/tag/v0.8.15) |
+| Node.js (LTS) | — | [24.21.0](https://nodejs.org/en/blog/release/v24.21.0) |
+| Biome | — | [2.5.14](https://www.npmjs.com/package/%40biomejs/biome/v/2.5.14) |
+| Commitlint CLI / conventional config | — | [21.2.3](https://www.npmjs.com/package/%40commitlint/cli/v/21.2.3) / [21.2.3](https://www.npmjs.com/package/%40commitlint/config-conventional/v/21.2.3) |
+| Knip | — | [6.38.0](https://www.npmjs.com/package/knip/v/6.38.0) |
+| Playwright Test | — | [1.63.0](https://www.npmjs.com/package/%40playwright/test/v/1.63.0) |
+| Stryker core / Jest runner | — | [10.0.0](https://www.npmjs.com/package/%40stryker-mutator/core/v/10.0.0) / [10.0.0](https://www.npmjs.com/package/%40stryker-mutator/jest-runner/v/10.0.0) |
+| Jest | — | [30.5.2](https://www.npmjs.com/package/jest/v/30.5.2) |
 
 A migracao para Spring Boot 4 exigiu trocar o starter Web pelo WebMVC, modularizar dependencias de teste e substituir `@MockBean` por `@MockitoBean`. O projeto continua com alvo Java 17, minimo exigido pelo Spring Boot 4. O grafo exato pos-atualizacao esta disponivel em `mvnw dependency:tree`.
 
-Fontes: [Spring Boot 4.1.1 release](https://spring.io/blog/2026/08/20/spring-boot-4-1-1-available-now/), [guia de migracao Spring Boot 4](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide), [Maven Central springdoc 3.1.1](https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui), [Maven Central H2 2.5.250](https://central.sonatype.com/artifact/com.h2database/h2), [springdoc confirma suporte Spring Boot 4 pela linha v3](https://github.com/springdoc/springdoc-openapi), [Apache Tomcat 11.0.26 release](https://tomcat.apache.org/tomcat-11.0-doc/changelog.html).
+Fontes: [Spring Boot 4.1.1 release](https://spring.io/blog/2026/08/20/spring-boot-4-1-1-available-now/), [guia de migracao Spring Boot 4](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide), [Maven Central springdoc 3.1.1](https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui), [Maven Central H2 2.5.250](https://central.sonatype.com/artifact/com.h2database/h2), [springdoc confirma suporte Spring Boot 4 pela linha v3](https://github.com/springdoc/springdoc-openapi), [Apache Tomcat 11.0.26 release](https://tomcat.apache.org/tomcat-11.0-doc/changelog.html), [Maven Central Micrometer OTLP registry 1.17.1](https://central.sonatype.com/artifact/io.micrometer/micrometer-registry-otlp/1.17.1).
 
 ## Conclusao
 
-Nao foi confirmada exploracao remota nem acesso a producao. Os achados de configuracao, validacao, timeout, cabecalhos e tres advisories de Tomcat foram corrigidos e cobertos pelo suite local, scanner ou ambos. O caminho inexistente que retorna 500 foi registrado separadamente na Issue #8. O historico sem autenticacao e o crescimento ilimitado permanecem riscos conhecidos do demo local; a primeira mudanca necessaria para uso compartilhado e definir identidade, autorizacao, retencao e limites.
+Nao foi confirmada exploracao remota nem acesso a producao. Os achados de configuracao, validacao, timeout, cabecalhos e tres advisories de Tomcat foram corrigidos e cobertos pelo suite local, scanner ou ambos. O caminho inexistente agora retorna 404 (Issue #8 / PR #10). OpenTelemetry e Sentry estao configurados de forma opt-in; falta configurar credenciais para verificar ingestao real. O historico sem autenticacao e o crescimento ilimitado permanecem riscos conhecidos do demo local; a primeira mudanca necessaria para uso compartilhado e definir identidade, autorizacao, retencao e limites.

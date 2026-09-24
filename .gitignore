@@ -10,6 +10,13 @@ out/
 .env
 .env.*
 application-local.properties
+node_modules/
+coverage/
+playwright-report/
+test-results/
+reports/
+stryker-tmp/
+.stryker-tmp/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -254,21 +254,31 @@ function formatData() {
     row.querySelector(".history-result").textContent=formatMoney(d.value,d.target);
   });
   const labels=["tableDate","tableOriginal","tablePair","tableRate","tableResult"];
-  document.querySelectorAll(".history-card tbody tr").forEach(row=>row.querySelectorAll("td").forEach((cell,index)=>cell.dataset.label=t(labels[index])));
+  document.querySelectorAll(".history-card tbody tr").forEach(row=>{
+    row.querySelectorAll("td").forEach((cell,index)=>{
+      cell.dataset.label=t(labels[index]);
+    });
+  });
 }
 function updateCurrencyNames() {
   const names=new Intl.DisplayNames([locale()],{type:"currency"});
   [source,target].filter(Boolean).forEach(select=>{
-    Array.from(select.options).forEach(option=>option.textContent=option.value+" · "+names.of(option.value));
+    Array.from(select.options).forEach(option=>{ option.textContent=option.value+" · "+names.of(option.value); });
   });
   if(source) byId("amountSymbol").textContent=new Intl.NumberFormat(locale(),{style:"currency",currency:source.value}).formatToParts(0).find(part=>part.type==="currency")?.value || source.value;
 }
 function applyLanguage() {
   document.documentElement.lang=language==="en"?"en":"pt-BR";
   document.title=byId("historyTitle") ? t("historyTitle")+" · "+t("brand") : byId("aboutTitle") ? t("navAbout")+" · "+t("brand") : t("brand");
-  document.querySelectorAll("[data-i18n]").forEach(element=>element.textContent=t(element.dataset.i18n));
-  document.querySelectorAll("[data-i18n-aria-label]").forEach(element=>element.setAttribute("aria-label",t(element.dataset.i18nAriaLabel)));
-  document.querySelectorAll("[data-i18n-alt]").forEach(element=>element.alt=t(element.dataset.i18nAlt));
+  document.querySelectorAll("[data-i18n]").forEach(element=>{
+    element.textContent=t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach(element=>{
+    element.setAttribute("aria-label",t(element.dataset.i18nAriaLabel));
+  });
+  document.querySelectorAll("[data-i18n-alt]").forEach(element=>{
+    element.alt=t(element.dataset.i18nAlt);
+  });
   document.querySelector(".brand")?.setAttribute("aria-label",t("brand"));
   const languageToggle=byId("languageToggle");
   if(languageToggle) {
@@ -283,7 +293,9 @@ function applyLanguage() {
   const swap=byId("swapCurrencies"); if(swap){swap.setAttribute("aria-label",t("swap"));swap.title=t("swap");}
   const copy=byId("copyResult"); if(copy){copy.setAttribute("aria-label",t("copy"));copy.title=t("copy");}
   const range=document.querySelector(".range-selector");if(range) range.setAttribute("aria-label",t("rangeAria"));
-  document.querySelectorAll("[data-days]").forEach(button=>button.textContent=interpolate(t("rangeDays"),{days:button.dataset.days}));
+  document.querySelectorAll("[data-days]").forEach(button=>{
+    button.textContent=interpolate(t("rangeDays"),{days:button.dataset.days});
+  });
   document.querySelectorAll(".field-error,.alert.error").forEach(element=>{
     if(!element.dataset.original) element.dataset.original=element.textContent.trim();
     const key=serverErrors[element.dataset.original];
@@ -296,7 +308,9 @@ function applyLanguage() {
 }
 function svgElement(name,attributes={}) {
   const element=document.createElementNS("http://www.w3.org/2000/svg",name);
-  Object.entries(attributes).forEach(([key,value])=>element.setAttribute(key,String(value)));
+  Object.entries(attributes).forEach(([key,value])=>{
+    element.setAttribute(key,String(value));
+  });
   return element;
 }
 function chartScale(points) {
@@ -342,7 +356,9 @@ function renderChart(points) {
   const defs=svgElement("defs"),gradient=svgElement("linearGradient",{id:"chartFill",x1:"0",y1:"0",x2:"0",y2:"1"});
   gradient.append(svgElement("stop",{offset:"0%","stop-color":"var(--chart-line)","stop-opacity":".22"}),svgElement("stop",{offset:"100%","stop-color":"var(--chart-line)","stop-opacity":"0"}));
   defs.append(gradient);svg.append(defs);
-  [35,105,175].forEach(y=>svg.append(svgElement("line",{x1:95,x2:640,y1:y,y2:y,stroke:"var(--border-color)","stroke-dasharray":"4 7"})));
+  [35,105,175].forEach(y=>{
+    svg.append(svgElement("line",{x1:95,x2:640,y1:y,y2:y,stroke:"var(--border-color)","stroke-dasharray":"4 7"}));
+  });
   [35,105,175].forEach((y,index)=>{byId(["chartYHigh","chartYMid","chartYLow"][index]).textContent=formatAxisRate(scale.min+(200-y)*scale.span/168,points);});
   svg.append(svgElement("path",{d:area,fill:"url(#chartFill)"}),svgElement("path",{d:line,fill:"none",stroke:"var(--chart-line)","stroke-width":3.5,"stroke-linecap":"round","stroke-linejoin":"round"}));
   svg.append(svgElement("circle",{id:"chartMarker",cx:coords.at(-1).x,cy:coords.at(-1).y,r:6,fill:"var(--chart-line)",stroke:"var(--bg-surface)","stroke-width":3}));
@@ -387,7 +403,9 @@ async function loadChart() {
   byId("chartTooltip").hidden = true;
   document.querySelector(".chart-data").hidden = true;
   byId("chartDataBody").replaceChildren();
-  document.querySelectorAll(".chart-y-axis span").forEach(label => label.textContent = "");
+  document.querySelectorAll(".chart-y-axis span").forEach(label => {
+    label.textContent = "";
+  });
   byId("rateChart").replaceChildren();
   byId("currentRate").textContent = "—";
   byId("reverseRate").textContent = "—";
@@ -443,12 +461,14 @@ async function loadChart() {
     byId("rateCaption").textContent = "";
   }
 }
-byId("languageToggle")?.querySelectorAll("[data-language]").forEach(button=>button.addEventListener("click",()=>{
-  if(button.dataset.language===language) return;
-  language=button.dataset.language;
-  store.set("currency-language",language);
-  applyLanguage();
-}));
+byId("languageToggle")?.querySelectorAll("[data-language]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    if(button.dataset.language===language) return;
+    language=button.dataset.language;
+    store.set("currency-language",language);
+    applyLanguage();
+  });
+});
 
 byId("themeToggle")?.addEventListener("click", () => {
   document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -479,14 +499,16 @@ source?.addEventListener("change", () => {
 });
 target?.addEventListener("change",loadChart);
 
-document.querySelectorAll("[data-days]").forEach(button => button.addEventListener("click", () => {
-  days = Number(button.dataset.days);
-  document.querySelectorAll("[data-days]").forEach(item => {
-    item.classList.toggle("selected", item === button);
-    item.setAttribute("aria-pressed", String(item === button));
+document.querySelectorAll("[data-days]").forEach(button => {
+  button.addEventListener("click", () => {
+    days = Number(button.dataset.days);
+    document.querySelectorAll("[data-days]").forEach(item => {
+      item.classList.toggle("selected", item === button);
+      item.setAttribute("aria-pressed", String(item === button));
+    });
+    loadChart();
   });
-  loadChart();
-}));
+});
 
 byId("converterForm")?.addEventListener("submit", event => {
   if (source.value === target.value) {
@@ -494,7 +516,7 @@ byId("converterForm")?.addEventListener("submit", event => {
     toast(t("sameCurrency"));
     return;
   }
-  if (Number(byId("amount").value) <= 0) {
+  if (!window.CurrencyInput.isValidConversionAmount(byId("amount").value)) {
     event.preventDefault();
     toast(t("invalidAmount"));
     return;

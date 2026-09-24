@@ -1,0 +1,23 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "files": {
+    "includes": [
+      "src/main/resources/static/js/**/*.js",
+      "src/main/resources/static/css/**/*.css",
+      "tests/**/*.cjs",
+      "!!.stryker-tmp",
+      "!!stryker-tmp"
+    ]
+  },
+  "formatter": {
+    "enabled": false
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended"
+    }
+  },
+  "assist": {
+    "enabled": false
+  }
+}
