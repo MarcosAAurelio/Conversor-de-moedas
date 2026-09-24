@@ -33,15 +33,14 @@
                 <nav class="nav" id="mainNav" aria-label="Navegação principal">
                     <a class="active" th:href="@{/}" data-i18n="navConvert" aria-current="page">Converter</a>
                     <a th:href="@{/historico}" data-i18n="navHistory">Histórico</a>
-                    <a th:href="@{/swagger-ui.html}">Swagger</a>
+                    <a th:href="@{/swagger-ui.html}" target="_blank" rel="noopener noreferrer">Swagger <span class="external-link-icon" aria-hidden="true">↗</span><span class="sr-only" data-i18n="newTabHint">(abre em uma nova guia)</span></a>
                     <a th:href="@{/sobre}" data-i18n="navAbout">Sobre</a>
                 </nav>
                 <div class="header-controls">
-                    <label class="sr-only" for="languageSelect" data-i18n="languageLabel">Idioma</label>
-                    <select id="languageSelect" class="language-select" aria-label="Idioma">
-                        <option value="pt-BR">PT-BR</option>
-                        <option value="en">EN</option>
-                    </select>
+                    <div class="language-toggle" id="languageToggle" role="group" aria-label="Idioma">
+                        <button class="language-option" type="button" data-language="pt-BR" lang="pt-BR" aria-label="Português" aria-pressed="true">PT</button>
+                        <button class="language-option" type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
                     <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
                         <span class="moon-icon" aria-hidden="true">☾</span>
                         <span class="sun-icon" aria-hidden="true">☀</span>
@@ -62,7 +61,6 @@
                     <h1 data-i18n="pageTitle">Câmbio claro para cada decisão.</h1>
                     <p class="page-subtitle" data-i18n="pageSubtitle">Converta moedas e acompanhe a evolução das cotações em um só lugar.</p>
                 </div>
-                <span class="heading-decoration" aria-hidden="true">↗</span>
             </div>
             <div class="dashboard-grid">
                 <section class="card converter-card" aria-labelledby="converterTitle">
@@ -141,10 +139,15 @@
                                 <span data-i18n="liveBadge">Atualizado</span>
                             </span>
                         </div>
-                        <p class="pair-label" id="pairLabel">BRL → USD</p>
+                        <p class="pair-label" id="sourceUnit">1 BRL</p>
                         <div class="rate-line">
+                            <span class="rate-equals" aria-hidden="true">=</span>
                             <strong id="currentRate">—</strong>
                             <span id="rateChange" class="rate-change"></span>
+                        </div>
+                        <div class="rate-reverse" aria-label="Cotação inversa" data-i18n-aria-label="reverseRateLabel">
+                            <span id="reverseSourceUnit">1 USD =</span>
+                            <strong id="reverseRate">—</strong>
                         </div>
                         <p class="rate-caption" id="rateCaption" data-i18n="chartLoading">Carregando cotações...</p>
                     </section>

@@ -34,15 +34,14 @@
                 <nav class="nav" id="mainNav" aria-label="Navegação principal">
                     <a th:href="@{/}" data-i18n="navConvert">Converter</a>
                     <a th:href="@{/historico}" data-i18n="navHistory">Histórico</a>
-                    <a th:href="@{/swagger-ui.html}">Swagger</a>
+                    <a th:href="@{/swagger-ui.html}" target="_blank" rel="noopener noreferrer">Swagger <span class="external-link-icon" aria-hidden="true">↗</span><span class="sr-only" data-i18n="newTabHint">(abre em uma nova guia)</span></a>
                     <a class="active" th:href="@{/sobre}" data-i18n="navAbout" aria-current="page">Sobre</a>
                 </nav>
                 <div class="header-controls">
-                    <label class="sr-only" for="languageSelect" data-i18n="languageLabel">Idioma</label>
-                    <select id="languageSelect" class="language-select" aria-label="Idioma">
-                        <option value="pt-BR">PT-BR</option>
-                        <option value="en">EN</option>
-                    </select>
+                    <div class="language-toggle" id="languageToggle" role="group" aria-label="Idioma">
+                        <button class="language-option" type="button" data-language="pt-BR" lang="pt-BR" aria-label="Português" aria-pressed="true">PT</button>
+                        <button class="language-option" type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
                     <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
                         <span class="moon-icon" aria-hidden="true">☾</span>
                         <span class="sun-icon" aria-hidden="true">☀</span>
@@ -64,7 +63,10 @@
             </div>
             <div class="about-grid">
                 <section class="card about-profile" aria-labelledby="aboutCreatorTitle">
-                    <div class="about-avatar" aria-hidden="true">MA</div>
+                    <button class="about-avatar-button" id="photoZoomButton" type="button" aria-label="Ampliar foto de Marcos Aurélio" data-i18n-aria-label="photoZoom">
+                        <img class="about-avatar" src="/images/marcos-aurelio.jpeg" alt="">
+                        <span class="photo-zoom-icon" aria-hidden="true">⌕</span>
+                    </button>
                     <p class="section-kicker" data-i18n="aboutCreatorLabel">CRIADOR DO SITE</p>
                     <h2 id="aboutCreatorTitle">Marcos Aurélio</h2>
                     <p data-i18n="aboutCreatorText">Estudante de Engenharia de Software e desenvolvedor em formação, com foco em back-end.</p>
@@ -72,6 +74,13 @@
                         <span>Java</span>
                         <span>Spring Boot</span>
                         <span>HTML · CSS · JavaScript</span>
+                    </div>
+                    <div class="creator-links">
+                        <span class="portfolio-status" data-i18n="portfolioStatus">PORTFÓLIO EM DESENVOLVIMENTO</span>
+                        <a class="portfolio-cta" href="https://github.com/MarcosAAurelio/personal-portfolio-MarcosAAurelio" target="_blank" rel="noopener noreferrer">
+                            <span data-i18n="creatorPortfolio">Acompanhar meu portfólio</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
                     </div>
                 </section>
                 <div class="about-side">
@@ -95,6 +104,11 @@
                 </div>
             </div>
         </main>
+        <dialog class="photo-dialog" id="photoDialog" aria-labelledby="photoDialogTitle">
+            <h2 class="sr-only" id="photoDialogTitle" data-i18n="photoDialogTitle">Foto ampliada de Marcos Aurélio</h2>
+            <button class="photo-dialog-close" id="closePhotoDialog" type="button" aria-label="Fechar foto ampliada" data-i18n-aria-label="closePhoto">×</button>
+            <img class="photo-dialog-image" src="/images/marcos-aurelio.jpeg" alt="Foto ampliada de Marcos Aurélio" data-i18n-alt="photoDialogTitle">
+        </dialog>
         <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
     </body>
 </html>

@@ -5,6 +5,7 @@ const translations = {
     navConvert:"Converter",
     navHistory:"Histórico",
     navAbout:"Sobre",
+    newTabHint:"(abre em uma nova guia)",
     languageLabel:"Idioma",
     menuOpen:"Abrir menu",
     menuClose:"Fechar menu",
@@ -28,6 +29,7 @@ const translations = {
     conversionDone:"Conversão concluída.",
     marketOverview:"VISÃO DO MERCADO",
     rateTitle:"Cotação atual",
+    reverseRateLabel:"Cotação inversa",
     liveBadge:"Atualizado",
     trendLabel:"TENDÊNCIA",
     chartTitle:"Evolução da cotação",
@@ -54,6 +56,11 @@ const translations = {
     aboutSubtitle:"Criei este conversor para tornar a consulta de moedas simples, clara e acessível.",
     aboutCreatorLabel:"CRIADOR DO SITE",
     aboutCreatorText:"Estudante de Engenharia de Software e desenvolvedor em formação, com foco em back-end.",
+    creatorPortfolio:"Portfólio em desenvolvimento",
+    portfolioStatus:"PORTFÓLIO EM DESENVOLVIMENTO",
+    photoZoom:"Ampliar foto de Marcos Aurélio",
+    photoDialogTitle:"Foto ampliada de Marcos Aurélio",
+    closePhoto:"Fechar foto ampliada",
     aboutTechLabel:"Tecnologias do projeto",
     aboutProjectLabel:"O PROJETO",
     aboutProjectTitle:"Câmbio com mais contexto",
@@ -90,6 +97,7 @@ const translations = {
     navConvert:"Convert",
     navHistory:"History",
     navAbout:"About",
+    newTabHint:"(opens in a new tab)",
     languageLabel:"Language",
     menuOpen:"Open menu",
     menuClose:"Close menu",
@@ -113,6 +121,7 @@ const translations = {
     conversionDone:"Conversion complete.",
     marketOverview:"MARKET OVERVIEW",
     rateTitle:"Current rate",
+    reverseRateLabel:"Inverse rate",
     liveBadge:"Updated",
     trendLabel:"TREND",
     chartTitle:"Exchange rate trend",
@@ -139,6 +148,11 @@ const translations = {
     aboutSubtitle:"I created this converter to make currency information simple, clear, and accessible.",
     aboutCreatorLabel:"SITE CREATOR",
     aboutCreatorText:"Software Engineering student and aspiring developer focused on back-end development.",
+    creatorPortfolio:"Portfolio in progress",
+    portfolioStatus:"PORTFOLIO IN PROGRESS",
+    photoZoom:"Zoom in on Marcos Aurélio's photo",
+    photoDialogTitle:"Enlarged photo of Marcos Aurélio",
+    closePhoto:"Close enlarged photo",
     aboutTechLabel:"Project technologies",
     aboutProjectLabel:"THE PROJECT",
     aboutProjectTitle:"Exchange rates with context",
@@ -253,9 +267,16 @@ function applyLanguage() {
   document.documentElement.lang=language==="en"?"en":"pt-BR";
   document.title=byId("historyTitle") ? t("historyTitle")+" · "+t("brand") : byId("aboutTitle") ? t("navAbout")+" · "+t("brand") : t("brand");
   document.querySelectorAll("[data-i18n]").forEach(element=>element.textContent=t(element.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria-label]").forEach(element=>element.setAttribute("aria-label",t(element.dataset.i18nAriaLabel)));
+  document.querySelectorAll("[data-i18n-alt]").forEach(element=>element.alt=t(element.dataset.i18nAlt));
   document.querySelector(".brand")?.setAttribute("aria-label",t("brand"));
-  byId("languageSelect").value=language;
-  byId("languageSelect").setAttribute("aria-label",t("languageLabel"));
+  const languageToggle=byId("languageToggle");
+  if(languageToggle) {
+    languageToggle.setAttribute("aria-label",t("languageLabel"));
+    languageToggle.querySelectorAll("[data-language]").forEach(button=>{
+      button.setAttribute("aria-pressed",String(button.dataset.language===language));
+    });
+  }
   const nav=byId("mainNav"); nav.setAttribute("aria-label",language==="en"?"Main navigation":"Navegação principal");
   document.querySelector(".about-tags")?.setAttribute("aria-label",t("aboutTechLabel"));
   const menu=byId("menuToggle"); menu.setAttribute("aria-label",t(menu.getAttribute("aria-expanded")==="true"?"menuClose":"menuOpen"));
@@ -332,9 +353,11 @@ function renderChart(points) {
   svg.onfocus=()=>showPoint(activePoint<0?coords.length-1:activePoint,coords);
   svg.onblur=()=>byId("chartTooltip").hidden=true;
   svg.onkeydown=event=>{if(event.key==="ArrowLeft"||event.key==="ArrowRight"){event.preventDefault();showPoint(Math.max(0,Math.min(coords.length-1,(activePoint<0?coords.length-1:activePoint)+(event.key==="ArrowRight"?1:-1))),coords);}};
-  byId("pairLabel").textContent=source.value+" → "+target.value;
+  byId("sourceUnit").textContent="1 "+source.value;
   byId("chartPair").textContent=source.value+" → "+target.value;
   byId("currentRate").textContent=formatRateMoney(points.at(-1).rate,target.value);
+  byId("reverseSourceUnit").textContent="1 "+target.value+" =";
+  byId("reverseRate").textContent=formatRateMoney(1/Number(points.at(-1).rate),source.value);
   const change=byId("rateChange"),first=Number(points[0].rate),last=Number(points.at(-1).rate),percent=points.length>1&&first?((last/first)-1)*100:0;
   const changeNumber=(percent>=0?"+":"")+new Intl.NumberFormat(locale(),{minimumFractionDigits:2,maximumFractionDigits:2}).format(percent);
   change.textContent=interpolate(t("periodChange"),{change:changeNumber,days});
@@ -367,8 +390,10 @@ async function loadChart() {
   document.querySelectorAll(".chart-y-axis span").forEach(label => label.textContent = "");
   byId("rateChart").replaceChildren();
   byId("currentRate").textContent = "—";
+  byId("reverseRate").textContent = "—";
   byId("rateChange").textContent = "";
-  byId("pairLabel").textContent = source.value + " → " + target.value;
+  byId("sourceUnit").textContent = "1 " + source.value;
+  byId("reverseSourceUnit").textContent = "1 " + target.value + " =";
   byId("chartPair").textContent = source.value + " → " + target.value;
   byId("rateCaption").textContent = t("chartLoading");
   byId("chartStart").textContent = "—";
@@ -418,11 +443,12 @@ async function loadChart() {
     byId("rateCaption").textContent = "";
   }
 }
-byId("languageSelect")?.addEventListener("change", event => {
-  language = event.target.value === "en" ? "en" : "pt-BR";
-  store.set("currency-language", language);
+byId("languageToggle")?.querySelectorAll("[data-language]").forEach(button=>button.addEventListener("click",()=>{
+  if(button.dataset.language===language) return;
+  language=button.dataset.language;
+  store.set("currency-language",language);
   applyLanguage();
-});
+}));
 
 byId("themeToggle")?.addEventListener("click", () => {
   document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -491,6 +517,12 @@ byId("copyResult")?.addEventListener("click", async () => {
 
 byId("clearHistoryForm")?.addEventListener("submit", event => {
   if (!confirm(t("confirmClear"))) event.preventDefault();
+});
+
+byId("photoZoomButton")?.addEventListener("click", () => byId("photoDialog")?.showModal());
+byId("closePhotoDialog")?.addEventListener("click", () => byId("photoDialog")?.close());
+byId("photoDialog")?.addEventListener("click", event => {
+  if (event.target === event.currentTarget) event.currentTarget.close();
 });
 
 applyLanguage();
