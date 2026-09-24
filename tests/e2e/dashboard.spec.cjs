@@ -41,6 +41,17 @@ test("applies the tilt effect to the three cards on the about page", async ({ pa
     .not.toBe("0deg");
 });
 
+test("shows the updated about heading in both languages", async ({ page }) => {
+  await page.goto("/sobre");
+  const heading = page.locator("#aboutTitle");
+
+  await expect(heading).toHaveText("Meu nome é Marcos Aurélio.");
+  await page.getByRole("button", { name: "English" }).click();
+  await expect(heading).toHaveText("My name is Marcos Aurélio.");
+  await page.getByRole("button", { name: "Português" }).click();
+  await expect(heading).toHaveText("Meu nome é Marcos Aurélio.");
+});
+
 test("disables the about card tilt when reduced motion is requested", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/sobre");
