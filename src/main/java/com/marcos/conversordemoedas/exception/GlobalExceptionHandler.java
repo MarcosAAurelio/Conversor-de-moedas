@@ -1,6 +1,7 @@
 package com.marcos.conversordemoedas.exception;
 
 import com.marcos.conversordemoedas.dto.ErrorResponse;
+import io.sentry.Sentry;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception) {
+        Sentry.captureException(exception);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno inesperado.", Map.of());
     }
 

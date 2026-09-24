@@ -74,3 +74,7 @@ Marcos Aurélio — estudante de Engenharia de Software e desenvolvedor em forma
 
 - [GitHub](https://github.com/MarcosAAurelio)
 - [LinkedIn](https://www.linkedin.com/in/eu-marcosaurelio-dev)
+
+## Observabilidade
+
+O Actuator/OpenTelemetry e a captura de erros pelo Sentry estão configurados em modo local seguro por padrão. Consulte [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) para configurar OTLP, Sentry, Datadog ou New Relic.
