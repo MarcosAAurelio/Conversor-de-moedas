@@ -14,10 +14,10 @@ public class ConversionRequest {
     private BigDecimal amount;
 
     @NotBlank(message = "Selecione a moeda de origem.")
-    private String sourceCurrency = "BRL";
+    private String sourceCurrency = "USD";
 
     @NotBlank(message = "Selecione a moeda de destino.")
-    private String targetCurrency = "USD";
+    private String targetCurrency = "BRL";
 
     public ConversionRequest() {
     }
