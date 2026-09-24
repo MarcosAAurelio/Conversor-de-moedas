@@ -3,12 +3,14 @@ package com.marcos.conversordemoedas.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Digits;
 import java.math.BigDecimal;
 
 public class ConversionRequest {
 
     @NotNull(message = "Informe um valor para converter.")
     @Positive(message = "O valor deve ser maior que zero.")
+    @Digits(integer = 13, fraction = 6, message = "Use no máximo 13 dígitos inteiros e 6 casas decimais.")
     private BigDecimal amount;
 
     @NotBlank(message = "Selecione a moeda de origem.")
