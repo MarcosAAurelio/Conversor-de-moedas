@@ -10,6 +10,14 @@ Aplicação web para converter moedas e consultar a evolução das cotações. O
 
 Os prints mostram o dashboard em 21/09/2026. As cotações exibidas no site são consultadas durante o uso e podem mudar.
 
+### Página Sobre
+
+| Tema claro | Tema escuro |
+| --- | --- |
+| ![Página Sobre no tema claro](docs/screenshots/sobre-claro.png) | ![Página Sobre no tema escuro](docs/screenshots/sobre-escuro.png) |
+
+Os três cards da página Sobre inclinam-se em resposta ao ponteiro e exibem um foco de luz. O efeito é desativado em dispositivos sem ponteiro preciso e quando o sistema solicita movimento reduzido.
+
 ## O que dá para fazer
 
 - Converter valores entre BRL, USD, EUR, GBP, JPY, CAD, ARS e CNY.
@@ -17,7 +25,7 @@ Os prints mostram o dashboard em 21/09/2026. As cotações exibidas no site são
 - Ver as conversões recentes no dashboard ou o histórico completo na página **Histórico**.
 - Alternar entre português e inglês e entre os temas claro e escuro. As escolhas ficam salvas no navegador.
 - Consultar os endpoints pela interface do Swagger.
-- Conhecer o criador do projeto e seus contatos na página **Sobre**.
+- Conhecer o criador do projeto e seus contatos na página **Sobre**, com cards interativos que respeitam a preferência por movimento reduzido.
 
 ## Executar localmente
 

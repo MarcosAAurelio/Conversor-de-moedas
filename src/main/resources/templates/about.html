@@ -22,6 +22,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" th:href="@{/css/styles.css}">
         <script th:src="@{/js/app.js}" defer></script>
+        <script th:src="@{/js/about-tilt.js}" defer></script>
     </head>
     <body>
         <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
@@ -62,7 +63,7 @@
                 <p class="page-subtitle" data-i18n="aboutSubtitle">Criei este conversor para tornar a consulta de moedas simples, clara e acessível.</p>
             </div>
             <div class="about-grid">
-                <section class="card about-profile" aria-labelledby="aboutCreatorTitle">
+                <section class="card about-profile about-tilt-card" data-tilt-card aria-labelledby="aboutCreatorTitle">
                     <button class="about-avatar-button" id="photoZoomButton" type="button" aria-label="Ampliar foto de Marcos Aurélio" data-i18n-aria-label="photoZoom">
                         <img class="about-avatar" src="/images/marcos-aurelio.jpeg" alt="" loading="lazy" decoding="async">
                         <span class="photo-zoom-icon" aria-hidden="true">⌕</span>
@@ -84,13 +85,13 @@
                     </div>
                 </section>
                 <div class="about-side">
-                    <section class="card about-story" aria-labelledby="aboutProjectTitle">
+                    <section class="card about-story about-tilt-card" data-tilt-card aria-labelledby="aboutProjectTitle">
                         <p class="section-kicker" data-i18n="aboutProjectLabel">O PROJETO</p>
                         <h2 id="aboutProjectTitle" data-i18n="aboutProjectTitle">Câmbio com mais contexto</h2>
                         <p data-i18n="aboutProjectText">Além do valor convertido, você pode conferir a taxa usada, acompanhar sua evolução e consultar as conversões anteriores.</p>
                         <a class="text-link" th:href="@{/}" data-i18n="aboutExplore">Explorar o conversor →</a>
                     </section>
-                    <section class="card about-contact" aria-labelledby="aboutContactTitle">
+                    <section class="card about-contact about-tilt-card" data-tilt-card aria-labelledby="aboutContactTitle">
                         <p class="section-kicker" data-i18n="aboutContactLabel">VAMOS CONVERSAR</p>
                         <h2 id="aboutContactTitle" data-i18n="aboutContactTitle">Onde me encontrar</h2>
                         <p data-i18n="aboutContactText">Conheça meus projetos e acompanhe minha trajetória profissional.</p>
