@@ -13,6 +13,8 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -57,20 +59,20 @@ jobs:
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
 
       - name: Upload Java coverage to Codecov
-        if: ${{ secrets.CODECOV_TOKEN != '' }}
+        if: ${{ env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v7
         with:
           files: ./target/site/jacoco/jacoco.xml
           flags: backend
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
 
       - name: Upload JavaScript coverage to Codecov
-        if: ${{ secrets.CODECOV_TOKEN != '' }}
+        if: ${{ env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v7
         with:
           files: ./coverage/lcov.info
           flags: frontend
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
 
       - name: Check pull request commit messages
         if: ${{ github.event_name == 'pull_request' }}
