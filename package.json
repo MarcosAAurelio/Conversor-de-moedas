@@ -6,6 +6,7 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "format": "biome format --write",
     "lint": "biome ci --reporter=summary",
     "knip": "knip --no-progress",
     "test:unit": "jest --runInBand",
