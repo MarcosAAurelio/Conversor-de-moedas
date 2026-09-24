@@ -12,14 +12,17 @@ import java.time.Duration;
 public class RestClientConfig {
 
     @Bean
-    public RestClient frankfurterRestClient(@Value("${frankfurter.api.base-url}") String baseUrl) {
+    public RestClient frankfurterRestClient(
+            RestClient.Builder restClientBuilder,
+            @Value("${frankfurter.api.base-url}") String baseUrl
+    ) {
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(3))
                 .build();
         JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
         requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
-        return RestClient.builder()
+        return restClientBuilder
                 .baseUrl(baseUrl)
                 .requestFactory(requestFactory)
                 .build();
