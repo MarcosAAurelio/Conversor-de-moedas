@@ -54,7 +54,7 @@ const translations = {
     clearing: "Limpando histórico...",
     clearedMessage: "Histórico limpo com sucesso.",
     aboutEyebrow: "POR TRÁS DO PROJETO",
-    aboutTitle: "Prazer, sou Marcos Aurélio.",
+    aboutTitle: "Meu nome é Marcos Aurélio.",
     aboutSubtitle:
       "Criei este conversor para tornar a consulta de moedas simples, clara e acessível.",
     aboutCreatorLabel: "CRIADOR DO SITE",
@@ -151,7 +151,7 @@ const translations = {
     clearing: "Clearing history...",
     clearedMessage: "History cleared successfully.",
     aboutEyebrow: "BEHIND THE PROJECT",
-    aboutTitle: "Hi, I'm Marcos Aurélio.",
+    aboutTitle: "My name is Marcos Aurélio.",
     aboutSubtitle:
       "I created this converter to make currency information simple, clear, and accessible.",
     aboutCreatorLabel: "SITE CREATOR",

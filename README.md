@@ -8,7 +8,15 @@ Aplicação web para converter moedas e consultar a evolução das cotações. O
 | --- | --- |
 | ![Dashboard no tema claro](docs/screenshots/tema-claro.png) | ![Dashboard no tema escuro](docs/screenshots/tema-escuro.png) |
 
-Os prints mostram o dashboard em 21/09/2026. As cotações exibidas no site são consultadas durante o uso e podem mudar.
+Capturas feitas em 24/09/2026 com a aplicação local. Os dois temas mostram a mesma cotação de referência consultada nessa data; os valores podem mudar durante o uso.
+
+### Página Sobre
+
+| Tema claro | Tema escuro |
+| --- | --- |
+| ![Página Sobre no tema claro](docs/screenshots/sobre-claro.png) | ![Página Sobre no tema escuro](docs/screenshots/sobre-escuro.png) |
+
+O título "Meu nome é Marcos Aurélio." apresenta o criador do projeto. As capturas mostram seu card com o ponteiro sobre ele, revelando a inclinação 3D e o foco de luz. Os três cards respondem ao ponteiro; o maior usa um movimento mais suave. O efeito é desativado em dispositivos sem ponteiro preciso e quando o sistema solicita movimento reduzido.
 
 ## O que dá para fazer
 
@@ -17,7 +25,7 @@ Os prints mostram o dashboard em 21/09/2026. As cotações exibidas no site são
 - Ver as conversões recentes no dashboard ou o histórico completo na página **Histórico**.
 - Alternar entre português e inglês e entre os temas claro e escuro. As escolhas ficam salvas no navegador.
 - Consultar os endpoints pela interface do Swagger.
-- Conhecer o criador do projeto e seus contatos na página **Sobre**.
+- Conhecer o criador do projeto e seus contatos na página **Sobre**, com cards interativos que respeitam a preferência por movimento reduzido.
 
 ## Executar localmente
 
@@ -36,7 +44,7 @@ No macOS ou Linux, use `./mvnw spring-boot:run`.
 | Sobre | http://localhost:8080/sobre |
 | Swagger | http://localhost:8080/swagger-ui.html |
 
-O servidor se vincula somente a `127.0.0.1` por padrao; mantenha essa configuracao para uso local. O historico usa H2 em memoria e e global nesta demonstracao local. O console H2 fica desativado por padrao. Para habilita-lo durante o desenvolvimento local, defina `H2_CONSOLE_ENABLED=true` antes de iniciar e acesse `http://localhost:8080/h2-console` com JDBC `jdbc:h2:mem:currency_converter`, usuario `sa` e senha vazia. Nao habilite o console fora de um ambiente local isolado.
+O servidor se vincula somente a `127.0.0.1` por padrão; mantenha essa configuração para uso local. O histórico usa H2 em memória e é global nesta demonstração local. O console H2 fica desativado por padrão. Para habilitá-lo durante o desenvolvimento local, defina `H2_CONSOLE_ENABLED=true` antes de iniciar e acesse `http://localhost:8080/h2-console` com JDBC `jdbc:h2:mem:currency_converter`, usuário `sa` e senha vazia. Não habilite o console fora de um ambiente local isolado.
 
 ## API
 

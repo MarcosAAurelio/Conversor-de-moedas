@@ -1212,6 +1212,59 @@ td {
   align-items: stretch;
 }
 
+.about-tilt-card {
+  --tilt-rotation-x: 0deg;
+  --tilt-rotation-y: 0deg;
+  --tilt-scale: 1;
+  --tilt-spot-x: 50%;
+  --tilt-spot-y: 50%;
+  --tilt-spotlight-color: rgba(20, 85, 217, 0.14);
+
+  position: relative;
+  transform: perspective(var(--tilt-perspective, 1200px)) rotateX(var(--tilt-rotation-x))
+    rotateY(var(--tilt-rotation-y)) scale(var(--tilt-scale));
+  transform-style: preserve-3d;
+  transition:
+    transform 420ms var(--motion-enter),
+    box-shadow 240ms var(--motion-state);
+}
+
+.about-tilt-card::before {
+  position: absolute;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--tilt-spot-x) var(--tilt-spot-y),
+    var(--tilt-spotlight-color),
+    transparent 52%
+  );
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms var(--motion-state);
+}
+
+.about-tilt-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.about-tilt-card[data-tilt-active="true"] {
+  z-index: 2;
+  box-shadow: 0 22px 48px -18px var(--shadow-color);
+  transition-duration: 100ms, 220ms;
+  will-change: transform;
+}
+
+.about-tilt-card[data-tilt-active="true"]::before {
+  opacity: 1;
+}
+
+html[data-theme="dark"] .about-tilt-card {
+  --tilt-spotlight-color: rgba(34, 211, 238, 0.17);
+}
+
 .about-profile {
   display: flex;
   flex-direction: column;
@@ -1710,6 +1763,13 @@ html[data-theme="dark"] .portfolio-cta {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .about-tilt-card {
+    transform: none;
+    transition: none;
+  }
+  .about-tilt-card::before {
+    display: none;
   }
   *,
   *:before,
