@@ -86,7 +86,10 @@ public class CurrencyConversionService {
     }
 
     private void validate(ConversionRequest request) {
-        if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getAmount() == null
+                || request.getAmount().compareTo(BigDecimal.ZERO) <= 0
+                || request.getAmount().precision() - request.getAmount().scale() > 13
+                || request.getAmount().scale() > 6) {
             throw new InvalidConversionException("O valor deve ser maior que zero.");
         }
 

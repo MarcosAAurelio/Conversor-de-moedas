@@ -36,7 +36,7 @@ No macOS ou Linux, use `./mvnw spring-boot:run`.
 | Sobre | http://localhost:8080/sobre |
 | Swagger | http://localhost:8080/swagger-ui.html |
 
-O histórico usa um banco H2 em memória. Ao encerrar a aplicação, as conversões salvas são perdidas. O console do banco fica em `http://localhost:8080/h2-console`, com URL JDBC `jdbc:h2:mem:currency_converter`, usuário `sa` e senha vazia.
+O servidor se vincula somente a `127.0.0.1` por padrao; mantenha essa configuracao para uso local. O historico usa H2 em memoria e e global nesta demonstracao local. O console H2 fica desativado por padrao. Para habilita-lo durante o desenvolvimento local, defina `H2_CONSOLE_ENABLED=true` antes de iniciar e acesse `http://localhost:8080/h2-console` com JDBC `jdbc:h2:mem:currency_converter`, usuario `sa` e senha vazia. Nao habilite o console fora de um ambiente local isolado.
 
 ## API
 

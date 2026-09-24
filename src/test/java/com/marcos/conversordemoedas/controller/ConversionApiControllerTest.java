@@ -14,8 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,7 +27,7 @@ class ConversionApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private CurrencyConversionService conversionService;
 
     @Test
@@ -56,5 +56,20 @@ class ConversionApiControllerTest {
                 .andExpect(jsonPath("$.sourceCurrency").value("BRL"))
                 .andExpect(jsonPath("$.targetCurrency").value("USD"))
                 .andExpect(jsonPath("$.convertedAmount").value(18.00));
+    }
+
+    @Test
+    void shouldRejectAmountsOutsideStoragePrecision() throws Exception {
+        mockMvc.perform(post("/api/conversoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "amount": 10000000000000.0000001,
+                                  "sourceCurrency": "BRL",
+                                  "targetCurrency": "USD"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fields.amount").exists());
     }
 }

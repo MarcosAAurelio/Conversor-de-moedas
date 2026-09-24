@@ -87,6 +87,17 @@ class CurrencyConversionServiceTest {
     }
 
     @Test
+    void shouldRejectAmountThatExceedsDatabasePrecision() {
+        ConversionRequest request = new ConversionRequest(new BigDecimal("10000000000000.0000001"), "BRL", "USD");
+
+        assertThatThrownBy(() -> conversionService.convert(request))
+                .isInstanceOf(InvalidConversionException.class);
+
+        verify(frankfurterClient, never()).getRate(any(), any());
+        verify(historyRepository, never()).save(any());
+    }
+
+    @Test
     void shouldPropagateExternalApiErrorsWithoutSaving() {
         ConversionRequest request = new ConversionRequest(new BigDecimal("50.00"), "USD", "BRL");
         when(frankfurterClient.getRate("USD", "BRL")).thenThrow(new ExternalRateApiException("Falha de comunicação com o serviço de cotações."));
