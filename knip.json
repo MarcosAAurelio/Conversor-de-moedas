@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/main/resources/static/js/app.js",
+    "src/main/resources/static/js/currency-input.js",
+    "tests/unit/**/*.test.cjs",
+    "tests/e2e/**/*.spec.cjs",
+    "jest.config.cjs",
+    "playwright.config.cjs",
+    "stryker.config.cjs",
+    "commitlint.config.cjs"
+  ],
+  "project": [
+    "src/main/resources/static/js/**/*.js",
+    "tests/**/*.cjs",
+    "*.config.cjs"
+  ]
+}

@@ -82,3 +82,7 @@ Marcos Aurélio — estudante de Engenharia de Software e desenvolvedor em forma
 ## Observabilidade
 
 O Actuator/OpenTelemetry e a captura de erros pelo Sentry estão configurados em modo local seguro por padrão. Consulte [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) para configurar OTLP, Sentry, Datadog ou New Relic.
+
+## Qualidade e testes
+
+Lint, testes unitários, testes de integração e testes de navegador rodam automaticamente nos PRs. Consulte [docs/QUALITY.md](docs/QUALITY.md) para comandos locais, mutation testing, ArchUnit e envio de cobertura ao Codecov.

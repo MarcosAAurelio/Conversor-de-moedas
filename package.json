@@ -1,0 +1,26 @@
+{
+  "name": "conversor-de-moedas-quality",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "lint": "biome ci --reporter=summary",
+    "knip": "knip --no-progress",
+    "test:unit": "jest --runInBand",
+    "test:unit:coverage": "jest --runInBand --coverage",
+    "test:mutation": "stryker run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "@playwright/test": "1.63.0",
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/jest-runner": "10.0.0",
+    "jest": "30.5.2",
+    "knip": "6.38.0"
+  }
+}

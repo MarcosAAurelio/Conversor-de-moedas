@@ -1,0 +1,82 @@
+name: Quality checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Install JavaScript tooling
+        run: npm ci
+
+      - name: Check JavaScript and CSS
+        run: npm run lint
+
+      - name: Check unused files and dependencies
+        run: npm run knip
+
+      - name: Run JavaScript unit tests with coverage
+        run: npm run test:unit:coverage
+
+      - name: Run mutation tests
+        run: npm run test:mutation
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser end-to-end tests
+        run: npm run test:e2e
+
+      - name: Run Java tests and generate JaCoCo report
+        run: ./mvnw --batch-mode --no-transfer-progress clean verify
+
+      - name: Upload Java coverage to Codecov
+        if: ${{ env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v7
+        with:
+          files: ./target/site/jacoco/jacoco.xml
+          flags: backend
+          token: ${{ env.CODECOV_TOKEN }}
+
+      - name: Upload JavaScript coverage to Codecov
+        if: ${{ env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v7
+        with:
+          files: ./coverage/lcov.info
+          flags: frontend
+          token: ${{ env.CODECOV_TOKEN }}
+
+      - name: Check pull request commit messages
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: npx commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
