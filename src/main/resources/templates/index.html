@@ -71,7 +71,7 @@
                             <p data-i18n="convertSubtitle">Consulte a cotação de referência em poucos segundos.</p>
                         </div>
                     </div>
-                    <form class="converter-form" id="converterForm" th:action="@{/converter}" th:object="${conversionRequest}" method="post">
+                    <form class="converter-form" id="converterForm" th:action="@{/converter}" th:object="${conversionRequest}" method="post" aria-busy="false">
                         <div class="field">
                             <label for="amount" data-i18n="amountLabel">Valor a converter</label>
                             <div class="amount-input-wrap">
@@ -101,6 +101,7 @@
                             <span data-i18n="convertButton">Converter agora</span>
                             <span aria-hidden="true">→</span>
                         </button>
+                        <span class="sr-only" id="conversionStatus" role="status" aria-live="polite"></span>
                         <p class="form-note">
                             <span class="status-dot"></span>
                             <span data-i18n="referenceNote">Cotações de referência · dados atualizados conforme a disponibilidade.</span>
@@ -164,7 +165,7 @@
                                 <button type="button" data-days="90" aria-pressed="false">90D</button>
                             </div>
                         </div>
-                        <div class="chart-wrap" id="chartWrap">
+                        <div class="chart-wrap" id="chartWrap" aria-busy="false">
                             <div class="chart-y-axis" aria-hidden="true">
                                 <span id="chartYHigh"></span>
                                 <span id="chartYMid"></span>
@@ -172,8 +173,9 @@
                             </div>
                             <svg id="rateChart" viewBox="0 0 640 230" preserveAspectRatio="none" role="img" aria-label="Evolução da cotação"></svg>
                             <div class="chart-tooltip" id="chartTooltip" hidden></div>
-                            <div class="chart-message" id="chartMessage" hidden></div>
-                            <div class="chart-skeleton" id="chartSkeleton" aria-hidden="true"></div>
+                            <div class="chart-message" id="chartMessage" role="status" aria-live="polite" hidden></div>
+                            <div class="chart-skeleton" id="chartSkeleton" aria-hidden="true" hidden></div>
+                            <span class="sr-only" id="chartLoadingStatus" role="status" aria-live="polite"></span>
                         </div>
                         <div class="chart-footer">
                             <span id="chartStart">—</span>

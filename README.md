@@ -68,6 +68,10 @@ Para rodar os testes:
 
 As cotações servem como referência e podem ser diferentes das taxas oferecidas por instituições financeiras.
 
+## Desenvolvimento
+
+Toda correção, melhoria, nova função ou remediação começa por uma Issue e é entregue por um Pull Request que a referencia. Os passos para agentes e colaboradores estão em [AGENTS.md](AGENTS.md).
+
 ## Autor
 
 Marcos Aurélio — estudante de Engenharia de Software e desenvolvedor em formação, com foco em back-end.
