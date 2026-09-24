@@ -4,6 +4,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -49,5 +50,9 @@ class WebControllerTest {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Marcos Aurélio")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("https://github.com/MarcosAAurelio")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("https://www.linkedin.com/in/eu-marcosaurelio-dev")));
+
+        mockMvc.perform(get("/h2-console"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
     }
 }

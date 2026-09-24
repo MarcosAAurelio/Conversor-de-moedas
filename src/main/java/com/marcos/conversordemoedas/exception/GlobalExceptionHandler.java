@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -32,6 +33,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConversionException.class)
     public ResponseEntity<ErrorResponse> handleConversion(ConversionException exception) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), Map.of());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMissingResource(NoResourceFoundException exception) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Recurso nao encontrado.", Map.of());
     }
 
     @ExceptionHandler(Exception.class)
