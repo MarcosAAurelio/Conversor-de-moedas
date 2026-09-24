@@ -16,7 +16,7 @@ Capturas feitas em 24/09/2026 com a aplicação local. Os dois temas mostram a m
 | --- | --- |
 | ![Página Sobre no tema claro](docs/screenshots/sobre-claro.png) | ![Página Sobre no tema escuro](docs/screenshots/sobre-escuro.png) |
 
-As capturas mostram o card do criador com o ponteiro sobre ele, revelando a inclinação 3D e o foco de luz. Os três cards respondem ao ponteiro; o maior usa um movimento mais suave. O efeito é desativado em dispositivos sem ponteiro preciso e quando o sistema solicita movimento reduzido.
+O título "Meu nome é Marcos Aurélio." apresenta o criador do projeto. As capturas mostram seu card com o ponteiro sobre ele, revelando a inclinação 3D e o foco de luz. Os três cards respondem ao ponteiro; o maior usa um movimento mais suave. O efeito é desativado em dispositivos sem ponteiro preciso e quando o sistema solicita movimento reduzido.
 
 ## O que dá para fazer
 
