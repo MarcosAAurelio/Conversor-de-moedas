@@ -50,6 +50,7 @@ const translations = {
     historyTitle:"Histórico de conversões",
     historySubtitle:"Todas as suas conversões, da mais recente para a mais antiga.",
     clearHistory:"Limpar histórico",
+    clearing:"Limpando histórico...",
     clearedMessage:"Histórico limpo com sucesso.",
     aboutEyebrow:"POR TRÁS DO PROJETO",
     aboutTitle:"Prazer, sou Marcos Aurélio.",
@@ -142,6 +143,7 @@ const translations = {
     historyTitle:"Conversion history",
     historySubtitle:"All your conversions, from newest to oldest.",
     clearHistory:"Clear history",
+    clearing:"Clearing history...",
     clearedMessage:"History cleared successfully.",
     aboutEyebrow:"BEHIND THE PROJECT",
     aboutTitle:"Hi, I'm Marcos Aurélio.",
@@ -198,7 +200,7 @@ const store = {
   set(key,value) { try { localStorage.setItem(key,value); } catch (_) {} }
 };
 let language = store.get("currency-language") === "en" ? "en" : "pt-BR";
-let days = 7, chartPoints = [], chartRequest = 0, chartStatus = "loading", activePoint = -1;
+let days = 7, chartPoints = [], chartRequest = 0, chartStatus = "loading", activePoint = -1, chartVisible = false;
 const source = document.querySelector("#sourceCurrency");
 const target = document.querySelector("#targetCurrency");
 const byId = id => document.getElementById(id);
@@ -391,15 +393,19 @@ function renderChart(points) {
   document.querySelector(".chart-data").hidden=false;
 }
 async function loadChart() {
-  if (!source || !target) return;
+  if (!source || !target || !chartVisible) return;
 
   const request = ++chartRequest;
   const message = byId("chartMessage");
   const skeleton = byId("chartSkeleton");
+  const chartWrap = byId("chartWrap");
+  const loadingStatus = byId("chartLoadingStatus");
   chartPoints = [];
   activePoint = -1;
   message.hidden = true;
   skeleton.hidden = false;
+  chartWrap.setAttribute("aria-busy", "true");
+  loadingStatus.textContent = t("chartLoading");
   byId("chartTooltip").hidden = true;
   document.querySelector(".chart-data").hidden = true;
   byId("chartDataBody").replaceChildren();
@@ -420,6 +426,8 @@ async function loadChart() {
   if (source.value === target.value) {
     chartStatus = "chartSame";
     skeleton.hidden = true;
+    chartWrap.setAttribute("aria-busy", "false");
+    loadingStatus.textContent = "";
     message.textContent = t(chartStatus);
     message.hidden = false;
     byId("rateCaption").textContent = "";
@@ -433,6 +441,8 @@ async function loadChart() {
     const points = await response.json();
     if (request !== chartRequest) return;
     skeleton.hidden = true;
+    chartWrap.setAttribute("aria-busy", "false");
+    loadingStatus.textContent = "";
 
     if (!Array.isArray(points) || !points.length) {
       chartStatus = "chartEmpty";
@@ -455,6 +465,8 @@ async function loadChart() {
   } catch (_) {
     if (request !== chartRequest) return;
     skeleton.hidden = true;
+    chartWrap.setAttribute("aria-busy", "false");
+    loadingStatus.textContent = "";
     chartStatus = "chartUnavailable";
     message.textContent = t(chartStatus);
     message.hidden = false;
@@ -521,6 +533,9 @@ byId("converterForm")?.addEventListener("submit", event => {
     toast(t("invalidAmount"));
     return;
   }
+  event.currentTarget.setAttribute("aria-busy", "true");
+  byId("conversionStatus").textContent = t("converting");
+  byId("convertButton").setAttribute("aria-busy", "true");
   byId("convertButton").disabled = true;
   byId("convertButton").querySelector("[data-i18n]").textContent = t("converting");
 });
@@ -538,7 +553,16 @@ byId("copyResult")?.addEventListener("click", async () => {
 });
 
 byId("clearHistoryForm")?.addEventListener("submit", event => {
-  if (!confirm(t("confirmClear"))) event.preventDefault();
+  if (!confirm(t("confirmClear"))) {
+    event.preventDefault();
+    return;
+  }
+  event.currentTarget.setAttribute("aria-busy", "true");
+  byId("clearHistoryStatus").textContent = t("clearing");
+  const button = event.currentTarget.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.setAttribute("aria-busy", "true");
+  button.textContent = t("clearing");
 });
 
 byId("photoZoomButton")?.addEventListener("click", () => byId("photoDialog")?.showModal());
@@ -548,6 +572,23 @@ byId("photoDialog")?.addEventListener("click", event => {
 });
 
 applyLanguage();
-loadChart();
+if (source && target) {
+  const startChart = () => {
+    chartVisible = true;
+    loadChart();
+  };
+  const chartCard = document.querySelector(".chart-card");
+  if (chartCard && "IntersectionObserver" in window) {
+    const chartObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        chartObserver.disconnect();
+        startChart();
+      }
+    }, {rootMargin:"160px 0px"});
+    chartObserver.observe(chartCard);
+  } else {
+    startChart();
+  }
+}
 if (byId("resultPanel")) toast(t("conversionDone"));
 else if (document.querySelector(".alert.error")) toast(document.querySelector(".alert.error").textContent.trim());
