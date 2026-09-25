@@ -77,17 +77,18 @@ jobs:
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
 
       - name: Build production application image
-        run: docker compose build app
+        run: docker compose build app proxy
 
       - name: Start production stack and smoke test
         run: |
+          docker compose run --rm --no-deps -e PORT=10000 -e APP_UPSTREAM=app:8080 proxy --check
           docker compose up --detach
           docker compose exec -T database sh -c 'PGPASSWORD="$DATABASE_APP_PASSWORD" psql -h 127.0.0.1 -U converter_app -d currency_converter --set=ON_ERROR_STOP=1' <<'SQL'
           INSERT INTO conversion_history (original_amount, source_currency, target_currency, rate, converted_amount, quote_date, created_at, owner_id)
           VALUES (100, 'BRL', 'USD', 0.18, 18, CURRENT_DATE, CURRENT_TIMESTAMP, 'ci-smoke-test');
           DELETE FROM conversion_history WHERE owner_id = 'ci-smoke-test';
           SQL
-          docker compose exec -T proxy nginx -t
+          docker compose exec -T proxy /usr/local/bin/start-nginx --check
           curl --insecure --fail --silent --show-error --retry 45 --retry-delay 2 --retry-connrefused --retry-all-errors https://localhost/ --output /dev/null
 
       - name: Show deployment logs after a failed smoke test

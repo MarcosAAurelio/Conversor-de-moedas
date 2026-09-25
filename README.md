@@ -85,7 +85,11 @@ O deploy incluído usa Caddy para HTTPS automático, Nginx como proxy com limite
 
 3. Acesse `https://SEU_DOMINIO`. Caddy solicita e renova os certificados TLS quando o DNS e as portas estão configurados corretamente.
 
-Somente o Caddy publica portas para a Internet. No Nginx, conversões têm limite de 10 requisições por minuto por IP (com rajada de 8), cotações têm limite de 30 por minuto (rajada de 15) e a emissão de tokens CSRF tem limite de 5 por minuto (rajada de 10). O proxy também limita tamanho e tempo de requisições. Se hospedar em uma plataforma gerenciada, use o perfil `prod`, configure as variáveis de banco exigidas em `application-prod.properties` e habilite TLS, limite de requisições e tamanho de corpo na borda da plataforma. Essa configuração mantém uma instância da aplicação; para escalar horizontalmente, configure sessões compartilhadas ou afinidade de sessão.
+Somente o Caddy publica portas para a Internet. No Nginx, conversões têm limite de 10 requisições por minuto por IP (com rajada de 8), cotações têm limite de 30 por minuto (rajada de 15) e a emissão de tokens CSRF tem limite de 5 por minuto (rajada de 10). O proxy também limita tamanho e tempo de requisições. Para publicar na Render, siga [docs/DEPLOY_RENDER.md](docs/DEPLOY_RENDER.md): a configuração mantém a aplicação privada e usa o Nginx como serviço público com os mesmos limites por IP. Essa configuração mantém uma instância da aplicação; para escalar horizontalmente, configure sessões compartilhadas ou afinidade de sessão.
+
+## Deploy na Render
+
+O repositório inclui um guia para configurar PostgreSQL gerenciado, aplicação privada e proxy público na Render. Siga [docs/DEPLOY_RENDER.md](docs/DEPLOY_RENDER.md) antes de criar os serviços; o fluxo configura credenciais de banco com permissões separadas para a aplicação e para o Flyway.
 
 Os registros ficam no volume `database_data`, com retenção padrão de 30 dias e limite de 100 conversões por sessão. A sessão anônima expira após 30 minutos de inatividade; não há contas de usuário nem recuperação de histórico depois que o cookie de sessão expira. Planeje backups criptografados fora do servidor. No Linux, uma exportação manual pode ser feita com `docker compose exec -T database pg_dump -U postgres -d currency_converter -Fc > backup.dump`; agende e teste a restauração de acordo com a infraestrutura escolhida. `docker compose down` mantém o volume de dados; remover o volume apaga o banco.
 
