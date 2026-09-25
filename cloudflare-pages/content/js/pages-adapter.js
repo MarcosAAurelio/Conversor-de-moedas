@@ -3,16 +3,7 @@
   const HISTORY_KEY = "currency-converter.pages.history.v1";
   const MAX_HISTORY = 100;
   const REQUEST_TIMEOUT_MS = 8000;
-  const SUPPORTED_CURRENCIES = new Set([
-    "BRL",
-    "USD",
-    "EUR",
-    "GBP",
-    "JPY",
-    "CAD",
-    "ARS",
-    "CNY",
-  ]);
+  const SUPPORTED_CURRENCIES = new Set(["BRL", "USD", "EUR", "GBP", "JPY", "CAD", "ARS", "CNY"]);
   let latestResult = null;
 
   function isValidDate(value) {
