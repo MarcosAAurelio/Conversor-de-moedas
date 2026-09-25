@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#F6F8FC">
+        <title>Histórico de Conversões</title>
+        <link rel="icon" href="data:,">
+        <script src="/js/theme-init.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/styles.css">
+        <script src="/js/pages-adapter.js" defer></script>
+        <script src="/js/app.js" defer></script>
+    </head>
+    <body>
+        <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" href="/" aria-label="Conversor de Moedas">
+                    <span class="brand-mark" aria-hidden="true">$</span>
+                    <span data-i18n="brand">Conversor de Moedas</span>
+                </a>
+                <nav class="nav" id="mainNav" aria-label="Navegação principal">
+                    <a href="/" data-i18n="navConvert">Converter</a>
+                    <a class="active" href="/history/" data-i18n="navHistory" aria-current="page">Histórico</a>
+                    <a href="/about/" data-i18n="navAbout">Sobre</a>
+                </nav>
+                <div class="header-controls">
+                    <div class="language-toggle" id="languageToggle" role="group" aria-label="Idioma">
+                        <button class="language-option" type="button" data-language="pt-BR" lang="pt-BR" aria-label="Português" aria-pressed="true">PT</button>
+                        <button class="language-option" type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
+                    <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+                        <span class="moon-icon" aria-hidden="true">☾</span>
+                        <span class="sun-icon" aria-hidden="true">☀</span>
+                    </button>
+                    <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+                        <span aria-hidden="true">☰</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="page history-page" id="main">
+            <div class="history-header">
+                <div>
+                    <p class="eyebrow">
+                        <span class="status-dot"></span>
+                        <span data-i18n="activityLabel">ATIVIDADE</span>
+                    </p>
+                    <h1 id="historyTitle" data-i18n="historyTitle">Histórico de conversões</h1>
+                    <p class="page-subtitle" data-i18n="historySubtitle">Todas as suas conversões, da mais recente para a mais antiga.</p>
+                    <p class="page-subtitle" data-i18n="pagesHistoryStorageNote">Nesta versão, o histórico fica neste navegador e pode ser apagado ao limpar os dados do site.</p>
+                </div>
+                <form id="clearHistoryForm" action="#" method="post">
+                    <button class="danger-button" type="submit" disabled data-i18n="clearHistory">Limpar histórico</button>
+                    <span class="sr-only" id="clearHistoryStatus" role="status" aria-live="polite"></span>
+                </form>
+            </div>
+            <section class="card history-card" id="historyCard" hidden>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="tableDate">Data</th>
+                                <th data-i18n="tableOriginal">Valor original</th>
+                                <th data-i18n="tablePair">Moedas</th>
+                                <th data-i18n="tableRate">Taxa de câmbio</th>
+                                <th data-i18n="tableResult">Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyRows"></tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="card empty-state" id="historyEmpty">
+                <div class="empty-icon" aria-hidden="true">↗</div>
+                <h2 data-i18n="historyEmptyTitle">Seu histórico começa aqui</h2>
+                <p data-i18n="pagesHistoryEmptyText">As conversões desta versão ficam salvas apenas neste navegador.</p>
+                <a class="primary-link" href="/" data-i18n="historyEmptyLink">Fazer uma conversão →</a>
+            </section>
+        </main>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    </body>
+</html>
