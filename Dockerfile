@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:25-jdk-alpine AS build
 
 WORKDIR /workspace
 COPY mvnw pom.xml ./
@@ -9,7 +9,7 @@ RUN sed -i 's/\r$//' mvnw \
     && ./mvnw --batch-mode --no-transfer-progress -DskipTests package \
     && cp target/conversor-de-moedas-0.0.1-SNAPSHOT.jar /workspace/application.jar
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 RUN addgroup -S -g 10001 app \
     && adduser -S -D -H -u 10001 -G app app
