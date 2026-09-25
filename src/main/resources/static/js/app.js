@@ -310,7 +310,7 @@ function formatData() {
     row.querySelector(".history-original").textContent = formatMoney(d.original, d.source);
     const pair = document.createElement("span");
     pair.className = "pair-pill";
-    pair.textContent = d.source + " → " + d.target;
+    pair.textContent = `${d.source} → ${d.target}`;
     row.querySelector(".history-pair").replaceChildren(pair);
     row
       .querySelector(".history-rate")
