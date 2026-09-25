@@ -37,7 +37,6 @@ jobs:
           Path(".env").write_text("".join(f"{key}={value}\n" for key, value in values.items()))
           PY
           docker compose config --quiet
-          docker compose run --rm --no-deps --entrypoint nginx proxy -t
           docker compose run --rm --no-deps --entrypoint caddy tls_proxy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 
       - name: Set up Node.js
@@ -83,6 +82,7 @@ jobs:
       - name: Start production stack and smoke test
         run: |
           docker compose up --detach
+          docker compose exec -T proxy nginx -t
           curl --insecure --fail --silent --show-error --retry 45 --retry-delay 2 --retry-connrefused --retry-all-errors https://localhost/ --output /dev/null
 
       - name: Show deployment logs after a failed smoke test
