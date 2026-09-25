@@ -1,5 +1,17 @@
 # Auditoria de seguranca
 
+## Atualização para preparação de deploy — Issue #19
+
+Esta atualização registra as mudanças de hardening implementadas depois da auditoria histórica abaixo. Ela não é uma certificação nem um teste de penetração em produção.
+
+- O histórico foi isolado por um identificador aleatório mantido na sessão HTTP; leituras e limpezas consultam somente esse identificador. Há limite de 100 itens por sessão e retenção configurável, com padrão de 30 dias.
+- Spring Security exige CSRF para operações que alteram estado. A API oferece `GET /api/security/csrf` com `Cache-Control: no-store`; os cookies de sessão usam `HttpOnly`, `SameSite=Strict` e, no perfil de produção, `Secure` e prefixo `__Host-`.
+- O Spring Security define CSP, `X-Frame-Options`, `X-Content-Type-Options` e política de referenciador; outros cabeçalhos limitam permissões do navegador e isolamento de origem.
+- O perfil de produção requer PostgreSQL e executa migrações Flyway. O Compose limita as portas públicas ao Caddy, aplica limites por IP e limites de corpo/tempo no Nginx, separa os papéis de migração e da aplicação e usa usuário não-root, filesystem somente leitura e capacidades removidas para o app e o Nginx. Os serviços também desabilitam a elevação de privilégios; o banco não publica uma porta na rede externa.
+- O Swagger fica desativado no perfil de produção. O Actuator expõe somente saúde sem detalhes.
+
+O deploy ainda depende de configuração externa: DNS e portas 80/443, segredos fortes no servidor, política e teste de backups e monitoramento. A configuração Compose mantém uma réplica da aplicação; escala horizontal requer sessões compartilhadas ou afinidade. A execução local não valida o ambiente de uma hospedagem específica.
+
 **Data:** 2026-09-24  
 **Escopo autorizado:** execucao local, `http://localhost:8080`. O historico global foi confirmado como intencional nesta versao local. Nenhuma URL de producao foi fornecida.  
 **Base observada:** commit `c693784`, antes das correcoes deste PR.

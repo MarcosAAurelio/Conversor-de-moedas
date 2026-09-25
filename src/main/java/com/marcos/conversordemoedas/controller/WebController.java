@@ -3,7 +3,10 @@ package com.marcos.conversordemoedas.controller;
 import com.marcos.conversordemoedas.dto.ConversionRequest;
 import com.marcos.conversordemoedas.exception.ConversionException;
 import com.marcos.conversordemoedas.service.CurrencyConversionService;
+import com.marcos.conversordemoedas.service.HistoryOwnerService;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,9 +19,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class WebController {
 
     private final CurrencyConversionService conversionService;
+    private final HistoryOwnerService historyOwnerService;
+    private final boolean apiDocsEnabled;
 
-    public WebController(CurrencyConversionService conversionService) {
+    public WebController(
+            CurrencyConversionService conversionService,
+            HistoryOwnerService historyOwnerService,
+            @Value("${api.docs.enabled:true}") boolean apiDocsEnabled
+    ) {
         this.conversionService = conversionService;
+        this.historyOwnerService = historyOwnerService;
+        this.apiDocsEnabled = apiDocsEnabled;
     }
 
     @ModelAttribute("currencies")
@@ -26,12 +37,17 @@ public class WebController {
         return conversionService.getSupportedCurrencies();
     }
 
+    @ModelAttribute("apiDocsEnabled")
+    public boolean apiDocsEnabled() {
+        return apiDocsEnabled;
+    }
+
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpServletRequest request) {
         if (!model.containsAttribute("conversionRequest")) {
             model.addAttribute("conversionRequest", new ConversionRequest());
         }
-        model.addAttribute("recentHistory", conversionService.getHistory().stream().limit(3).toList());
+        model.addAttribute("recentHistory", conversionService.getHistory(historyOwnerService.getOwnerId(request)).stream().limit(3).toList());
         return "index";
     }
 
@@ -39,16 +55,18 @@ public class WebController {
     public String convert(
             @Valid @ModelAttribute("conversionRequest") ConversionRequest request,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            HttpServletRequest httpRequest
     ) {
-        model.addAttribute("recentHistory", conversionService.getHistory().stream().limit(3).toList());
+        String ownerId = historyOwnerService.getOwnerId(httpRequest);
+        model.addAttribute("recentHistory", conversionService.getHistory(ownerId).stream().limit(3).toList());
         if (bindingResult.hasErrors()) {
             return "index";
         }
 
         try {
-            model.addAttribute("conversionResult", conversionService.convert(request));
-            model.addAttribute("recentHistory", conversionService.getHistory().stream().limit(3).toList());
+            model.addAttribute("conversionResult", conversionService.convert(request, ownerId));
+            model.addAttribute("recentHistory", conversionService.getHistory(ownerId).stream().limit(3).toList());
         } catch (ConversionException exception) {
             model.addAttribute("conversionError", exception.getMessage());
         }
@@ -57,8 +75,8 @@ public class WebController {
     }
 
     @GetMapping("/historico")
-    public String history(Model model) {
-        model.addAttribute("history", conversionService.getHistory());
+    public String history(Model model, HttpServletRequest request) {
+        model.addAttribute("history", conversionService.getHistory(historyOwnerService.getOwnerId(request)));
         return "history";
     }
 
@@ -68,8 +86,8 @@ public class WebController {
     }
 
     @PostMapping("/historico/limpar")
-    public String clearHistory(RedirectAttributes redirectAttributes) {
-        conversionService.clearHistory();
+    public String clearHistory(RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        conversionService.clearHistory(historyOwnerService.getOwnerId(request));
         redirectAttributes.addFlashAttribute("message", "Historico limpo com sucesso.");
         return "redirect:/historico";
     }

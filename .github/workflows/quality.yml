@@ -21,6 +21,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate deployment configuration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import secrets
+
+          values = {
+              "POSTGRES_ADMIN_PASSWORD": secrets.token_hex(32),
+              "DATABASE_APP_PASSWORD": secrets.token_hex(32),
+              "DATABASE_MIGRATION_PASSWORD": secrets.token_hex(32),
+              "DOMAIN": "localhost",
+              "HISTORY_RETENTION_DAYS": "30",
+          }
+          Path(".env").write_text("".join(f"{key}={value}\n" for key, value in values.items()))
+          PY
+          docker compose config --quiet
+          docker compose run --rm --no-deps --entrypoint caddy tls_proxy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
@@ -57,6 +75,29 @@ jobs:
 
       - name: Run Java tests and generate JaCoCo report
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
+
+      - name: Build production application image
+        run: docker compose build app proxy
+
+      - name: Start production stack and smoke test
+        run: |
+          docker compose run --rm --no-deps -e PORT=10000 -e APP_UPSTREAM=app:8080 proxy --check
+          docker compose up --detach
+          docker compose exec -T database sh -c 'PGPASSWORD="$DATABASE_APP_PASSWORD" psql -h 127.0.0.1 -U converter_app -d currency_converter --set=ON_ERROR_STOP=1' <<'SQL'
+          INSERT INTO conversion_history (original_amount, source_currency, target_currency, rate, converted_amount, quote_date, created_at, owner_id)
+          VALUES (100, 'BRL', 'USD', 0.18, 18, CURRENT_DATE, CURRENT_TIMESTAMP, 'ci-smoke-test');
+          DELETE FROM conversion_history WHERE owner_id = 'ci-smoke-test';
+          SQL
+          docker compose exec -T proxy /usr/local/bin/start-nginx --check
+          curl --insecure --fail --silent --show-error --retry 45 --retry-delay 2 --retry-connrefused --retry-all-errors https://localhost/ --output /dev/null
+
+      - name: Show deployment logs after a failed smoke test
+        if: ${{ failure() }}
+        run: docker compose logs --no-color
+
+      - name: Stop deployment stack
+        if: ${{ always() }}
+        run: docker compose down --volumes
 
       - name: Upload Java coverage to Codecov
         if: ${{ env.CODECOV_TOKEN != '' }}

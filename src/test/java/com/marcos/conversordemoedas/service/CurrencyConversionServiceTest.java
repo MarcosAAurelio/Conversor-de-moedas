@@ -39,7 +39,7 @@ class CurrencyConversionServiceTest {
 
     @BeforeEach
     void setUp() {
-        conversionService = new CurrencyConversionService(frankfurterClient, historyRepository);
+        conversionService = new CurrencyConversionService(frankfurterClient, historyRepository, 30);
     }
 
     @Test
@@ -52,8 +52,10 @@ class CurrencyConversionServiceTest {
                 new BigDecimal("0.180000")
         ));
         when(historyRepository.save(any(ConversionHistory.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(historyRepository.findTop101ByOwnerIdOrderByCreatedAtDescIdDesc("test-owner"))
+                .thenReturn(List.of());
 
-        ConversionResponse response = conversionService.convert(request);
+        ConversionResponse response = conversionService.convert(request, "test-owner");
 
         assertThat(response.convertedAmount()).isEqualByComparingTo("18.00");
         assertThat(response.rate()).isEqualByComparingTo("0.180000");
@@ -63,13 +65,14 @@ class CurrencyConversionServiceTest {
         verify(historyRepository).save(captor.capture());
         assertThat(captor.getValue().getSourceCurrency()).isEqualTo("BRL");
         assertThat(captor.getValue().getTargetCurrency()).isEqualTo("USD");
+        assertThat(captor.getValue().getOwnerId()).isEqualTo("test-owner");
     }
 
     @Test
     void shouldRejectSameCurrencies() {
         ConversionRequest request = new ConversionRequest(new BigDecimal("50.00"), "EUR", "EUR");
 
-        assertThatThrownBy(() -> conversionService.convert(request))
+        assertThatThrownBy(() -> conversionService.convert(request, "test-owner"))
                 .isInstanceOf(InvalidConversionException.class)
                 .hasMessage("A moeda de origem deve ser diferente da moeda de destino.");
 
@@ -81,7 +84,7 @@ class CurrencyConversionServiceTest {
     void shouldRejectUnsupportedCurrency() {
         ConversionRequest request = new ConversionRequest(new BigDecimal("50.00"), "BTC", "USD");
 
-        assertThatThrownBy(() -> conversionService.convert(request))
+        assertThatThrownBy(() -> conversionService.convert(request, "test-owner"))
                 .isInstanceOf(InvalidConversionException.class)
                 .hasMessage("Moeda de origem inválida.");
     }
@@ -90,7 +93,7 @@ class CurrencyConversionServiceTest {
     void shouldRejectAmountThatExceedsDatabasePrecision() {
         ConversionRequest request = new ConversionRequest(new BigDecimal("10000000000000.0000001"), "BRL", "USD");
 
-        assertThatThrownBy(() -> conversionService.convert(request))
+        assertThatThrownBy(() -> conversionService.convert(request, "test-owner"))
                 .isInstanceOf(InvalidConversionException.class);
 
         verify(frankfurterClient, never()).getRate(any(), any());
@@ -102,7 +105,7 @@ class CurrencyConversionServiceTest {
         ConversionRequest request = new ConversionRequest(new BigDecimal("50.00"), "USD", "BRL");
         when(frankfurterClient.getRate("USD", "BRL")).thenThrow(new ExternalRateApiException("Falha de comunicação com o serviço de cotações."));
 
-        assertThatThrownBy(() -> conversionService.convert(request))
+        assertThatThrownBy(() -> conversionService.convert(request, "test-owner"))
                 .isInstanceOf(ExternalRateApiException.class);
 
         verify(historyRepository, never()).save(any());

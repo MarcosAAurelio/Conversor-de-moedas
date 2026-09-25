@@ -1,10 +1,10 @@
 # Observabilidade
 
-O projeto usa Spring Boot Actuator, Micrometer e OpenTelemetry para métricas e traces. Erros inesperados podem ser enviados ao Sentry. O histórico de conversões permanece global no banco H2 local nesta versão.
+O projeto usa Spring Boot Actuator, Micrometer e OpenTelemetry para métricas e traces. Erros inesperados podem ser enviados ao Sentry. O perfil local usa H2 em memória; o perfil de produção persiste conversões no PostgreSQL e separa o histórico por sessão anônima.
 
 ## Modo local
 
-Por padrão, a aplicação escuta somente em `127.0.0.1`, não envia telemetria para serviços externos e deixa o Sentry desativado enquanto `SENTRY_DSN` estiver vazio. Os endpoints HTTP do Actuator expostos são apenas `/actuator/health` e `/actuator/info`; detalhes de componentes não são incluídos na resposta de saúde. Métricas e dados de diagnóstico não são expostos por uma rota pública.
+Por padrão, a aplicação escuta somente em `127.0.0.1`, não envia telemetria para serviços externos e deixa o Sentry desativado enquanto `SENTRY_DSN` estiver vazio. O único endpoint HTTP do Actuator exposto é `/actuator/health`; detalhes de componentes não são incluídos. Métricas e dados de diagnóstico não são expostos por uma rota pública.
 
 Execute os comandos a seguir no PowerShell para enviar traces e métricas a um coletor OTLP local:
 
@@ -33,7 +33,6 @@ Um Collector é preferível quando for necessário enviar os mesmos dados para m
 ## Endpoints
 
 - `GET /actuator/health`: estado sem detalhes de componentes.
-- `GET /actuator/info`: informações básicas do serviço.
 - Métricas e detalhes de saúde ficam fora da exposição HTTP; métricas podem ser exportadas por OTLP quando habilitadas.
 
 Em ambiente fora do computador local, proteja os endpoints operacionais na rede e configure autenticação/autorização antes de ampliar a lista exposta.

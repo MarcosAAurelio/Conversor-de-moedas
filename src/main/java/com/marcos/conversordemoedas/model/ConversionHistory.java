@@ -40,6 +40,9 @@ public class ConversionHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false, length = 36)
+    private String ownerId;
+
     public ConversionHistory() {
     }
 
@@ -49,7 +52,8 @@ public class ConversionHistory {
             String targetCurrency,
             BigDecimal rate,
             BigDecimal convertedAmount,
-            LocalDate quoteDate
+            LocalDate quoteDate,
+            String ownerId
     ) {
         this.originalAmount = originalAmount;
         this.sourceCurrency = sourceCurrency;
@@ -57,6 +61,7 @@ public class ConversionHistory {
         this.rate = rate;
         this.convertedAmount = convertedAmount;
         this.quoteDate = quoteDate;
+        this.ownerId = ownerId;
     }
 
     @PrePersist
@@ -94,5 +99,9 @@ public class ConversionHistory {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
     }
 }
