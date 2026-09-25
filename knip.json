@@ -4,6 +4,7 @@
     "src/main/resources/static/js/app.js",
     "src/main/resources/static/js/currency-input.js",
     "src/main/resources/static/js/about-tilt.js",
+    "src/main/resources/static/js/theme-init.js",
     "tests/unit/**/*.test.cjs",
     "tests/e2e/**/*.spec.cjs",
     "jest.config.cjs",
