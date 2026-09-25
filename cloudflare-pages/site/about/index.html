@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#F6F8FC">
+        <meta name="description" content="Conheça Marcos Aurélio, criador do Conversor de Moedas.">
+        <title>Sobre · Conversor de Moedas</title>
+        <link rel="icon" href="data:,">
+        <script src="/js/theme-init.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/styles.css">
+        <script src="/js/app.js" defer></script>
+        <script src="/js/about-tilt.js" defer></script>
+    </head>
+    <body>
+        <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo</a>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" href="/" aria-label="Conversor de Moedas">
+                    <span class="brand-mark" aria-hidden="true">$</span>
+                    <span data-i18n="brand">Conversor de Moedas</span>
+                </a>
+                <nav class="nav" id="mainNav" aria-label="Navegação principal">
+                    <a href="/" data-i18n="navConvert">Converter</a>
+                    <a href="/history/" data-i18n="navHistory">Histórico</a>
+                    <a class="active" href="/about/" data-i18n="navAbout" aria-current="page">Sobre</a>
+                </nav>
+                <div class="header-controls">
+                    <div class="language-toggle" id="languageToggle" role="group" aria-label="Idioma">
+                        <button class="language-option" type="button" data-language="pt-BR" lang="pt-BR" aria-label="Português" aria-pressed="true">PT</button>
+                        <button class="language-option" type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
+                    <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+                        <span class="moon-icon" aria-hidden="true">☾</span>
+                        <span class="sun-icon" aria-hidden="true">☀</span>
+                    </button>
+                    <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+                        <span aria-hidden="true">☰</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="page about-page" id="main">
+            <div class="about-intro">
+                <p class="eyebrow">
+                    <span class="status-dot"></span>
+                    <span data-i18n="aboutEyebrow">POR TRÁS DO PROJETO</span>
+                </p>
+                <h1 id="aboutTitle" data-i18n="aboutTitle">Meu nome é Marcos Aurélio.</h1>
+                <p class="page-subtitle" data-i18n="aboutSubtitle">Criei este conversor para tornar a consulta de moedas simples, clara e acessível.</p>
+            </div>
+            <div class="about-grid">
+                <section class="card about-profile about-tilt-card" data-tilt-card data-tilt-limit="10" data-tilt-scale="1.03" aria-labelledby="aboutCreatorTitle">
+                    <button class="about-avatar-button" id="photoZoomButton" type="button" aria-label="Ampliar foto de Marcos Aurélio" data-i18n-aria-label="photoZoom">
+                        <img class="about-avatar" src="/images/marcos-aurelio.jpeg" alt="" loading="lazy" decoding="async">
+                        <span class="photo-zoom-icon" aria-hidden="true">⌕</span>
+                    </button>
+                    <p class="section-kicker" data-i18n="aboutCreatorLabel">CRIADOR DO SITE</p>
+                    <h2 id="aboutCreatorTitle">Marcos Aurélio</h2>
+                    <p data-i18n="aboutCreatorText">Estudante de Engenharia de Software e desenvolvedor em formação, com foco em back-end.</p>
+                    <div class="about-tags" aria-label="Tecnologias do projeto">
+                        <span>Java</span>
+                        <span>Spring Boot</span>
+                        <span>HTML · CSS · JavaScript</span>
+                    </div>
+                    <div class="creator-links">
+                        <span class="portfolio-status" data-i18n="portfolioStatus">PORTFÓLIO EM DESENVOLVIMENTO</span>
+                        <a class="portfolio-cta" href="https://github.com/MarcosAAurelio/personal-portfolio-MarcosAAurelio" target="_blank" rel="noopener noreferrer">
+                            <span data-i18n="creatorPortfolio">Acompanhar meu portfólio</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </section>
+                <div class="about-side">
+                    <section class="card about-story about-tilt-card" data-tilt-card aria-labelledby="aboutProjectTitle">
+                        <p class="section-kicker" data-i18n="aboutProjectLabel">O PROJETO</p>
+                        <h2 id="aboutProjectTitle" data-i18n="aboutProjectTitle">Câmbio com mais contexto</h2>
+                        <p data-i18n="aboutProjectText">Além do valor convertido, você pode conferir a taxa usada, acompanhar sua evolução e consultar as conversões anteriores.</p>
+                        <a class="text-link" href="/" data-i18n="aboutExplore">Explorar o conversor →</a>
+                    </section>
+                    <section class="card about-contact about-tilt-card" data-tilt-card aria-labelledby="aboutContactTitle">
+                        <p class="section-kicker" data-i18n="aboutContactLabel">VAMOS CONVERSAR</p>
+                        <h2 id="aboutContactTitle" data-i18n="aboutContactTitle">Onde me encontrar</h2>
+                        <p data-i18n="aboutContactText">Conheça meus projetos e acompanhe minha trajetória profissional.</p>
+                        <div class="contact-links">
+                            <a href="https://github.com/MarcosAAurelio" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/eu-marcosaurelio-dev" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+        <dialog class="photo-dialog" id="photoDialog" aria-labelledby="photoDialogTitle">
+            <h2 class="sr-only" id="photoDialogTitle" data-i18n="photoDialogTitle">Foto ampliada de Marcos Aurélio</h2>
+            <button class="photo-dialog-close" id="closePhotoDialog" type="button" aria-label="Fechar foto ampliada" data-i18n-aria-label="closePhoto">×</button>
+            <img class="photo-dialog-image" src="/images/marcos-aurelio.jpeg" alt="Foto ampliada de Marcos Aurélio" data-i18n-alt="photoDialogTitle" loading="lazy" decoding="async">
+        </dialog>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    </body>
+</html>

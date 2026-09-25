@@ -1,6 +1,16 @@
 # Conversor de Moedas
 
-Aplicação web para converter moedas e consultar a evolução das cotações. O resultado mostra a taxa utilizada e a data de referência. O histórico é privado para a sessão anônima atual.
+Aplicação web para converter moedas e consultar a evolução das cotações. O resultado mostra a taxa utilizada e a data de referência.
+
+## Versões do projeto
+
+O projeto foi criado como uma aplicação de portfólio com foco em back-end Java: Spring Boot, páginas Thymeleaf, API REST, persistência com Spring Data JPA e histórico separado por sessão. A execução local usa H2; o perfil de produção Java usa PostgreSQL.
+
+Para publicar uma demonstração sem custo de hospedagem no Cloudflare Pages, o repositório também contém uma versão estática em HTML, CSS e JavaScript. Ela mantém o conversor, o gráfico, os temas, os idiomas e as telas de histórico e sobre. O Cloudflare Pages publica essa versão estática; ele não executa a JVM nem o servidor Spring Boot. O código e as instruções da aplicação Java continuam no repositório.
+
+Na versão Pages, o navegador consulta diretamente a [API pública Frankfurter](https://frankfurter.dev/) e guarda o histórico no armazenamento local do navegador. Esse histórico não é compartilhado com a aplicação Java, não sincroniza entre dispositivos e pode ser apagado ao limpar os dados do site. A versão estática não inclui os endpoints REST nem o Swagger da aplicação Java.
+
+Consulte [docs/DEPLOY_CLOUDFLARE_PAGES.md](docs/DEPLOY_CLOUDFLARE_PAGES.md) para configurar a publicação estática. A documentação de execução local, Docker Compose e Render abaixo se refere à aplicação original Java.
 
 ## Telas
 
@@ -27,6 +37,8 @@ O título "Meu nome é Marcos Aurélio." apresenta o criador do projeto. As capt
 - Consultar os endpoints pela interface do Swagger.
 - Conhecer o criador do projeto e seus contatos na página **Sobre**, com cards interativos que respeitam a preferência por movimento reduzido.
 
+Esses recursos descrevem a aplicação Java original. A versão do Cloudflare Pages mantém as páginas públicas e o conversor, mas não oferece Swagger nem uma API própria.
+
 ## Executar localmente
 
 É necessário ter o JDK 17 ou superior. Na raiz do projeto, execute:
@@ -46,7 +58,7 @@ No macOS ou Linux, use `./mvnw spring-boot:run`.
 
 O perfil local se vincula somente a `127.0.0.1` e usa H2 em memória. Cada navegador recebe um histórico separado; os dados locais são apagados quando o processo termina. O console H2 não é incluído na aplicação.
 
-## API
+## API da aplicação Java
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
