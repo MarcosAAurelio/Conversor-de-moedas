@@ -39,7 +39,7 @@ Não crie um domínio público para este serviço. Ele deve aceitar chamadas ape
 
 ## 3. Criar o serviço web público
 
-Crie um **Web Service** ligado ao mesmo repositório e branch `main`, com Runtime `Docker` e caminho de Dockerfile `./deploy/nginx/Dockerfile`. Selecione o mesmo workspace e região dos outros recursos.
+Crie um **Web Service** ligado ao mesmo repositório e branch `main`, com Runtime `Docker` e caminho de Dockerfile `./deploy/nginx/Dockerfile` e Docker Context `.` (raiz do repositório). Selecione o mesmo workspace e região dos outros recursos.
 
 Configure a variável `APP_UPSTREAM` com o endereço interno completo do serviço privado da aplicação, no formato `host:8080` exibido no painel **Connect** do serviço. Deixe `PORT` no padrão `10000` da Render. Configure o caminho de health check como `/actuator/health`.
 
