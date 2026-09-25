@@ -11,11 +11,13 @@ import com.marcos.conversordemoedas.repository.ConversionHistoryRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +28,23 @@ public class CurrencyConversionService {
 
     private final FrankfurterClient frankfurterClient;
     private final ConversionHistoryRepository historyRepository;
+    private final int historyRetentionDays;
 
-    public CurrencyConversionService(FrankfurterClient frankfurterClient, ConversionHistoryRepository historyRepository) {
+    public CurrencyConversionService(
+            FrankfurterClient frankfurterClient,
+            ConversionHistoryRepository historyRepository,
+            @Value("${app.history.retention-days:30}") int historyRetentionDays
+    ) {
         this.frankfurterClient = frankfurterClient;
         this.historyRepository = historyRepository;
+        if (historyRetentionDays < 1) {
+            throw new IllegalArgumentException("History retention must be at least one day.");
+        }
+        this.historyRetentionDays = historyRetentionDays;
     }
 
     @Transactional
-    public ConversionResponse convert(ConversionRequest request) {
+    public ConversionResponse convert(ConversionRequest request, String ownerId) {
         validate(request);
 
         String sourceCurrency = normalizeCurrency(request.getSourceCurrency());
@@ -49,23 +60,34 @@ public class CurrencyConversionService {
                 targetCurrency,
                 rate,
                 convertedAmount,
-                rateResponse.date()
+                rateResponse.date(),
+                ownerId
         ));
+
+        List<ConversionHistory> recentHistory = historyRepository.findTop101ByOwnerIdOrderByCreatedAtDescIdDesc(ownerId);
+        if (recentHistory.size() > 100) {
+            historyRepository.deleteAll(recentHistory.subList(100, recentHistory.size()));
+        }
 
         return toResponse(savedConversion);
     }
 
     @Transactional(readOnly = true)
-    public List<ConversionResponse> getHistory() {
-        return historyRepository.findAllByOrderByCreatedAtDesc()
+    public List<ConversionResponse> getHistory(String ownerId) {
+        return historyRepository.findTop100ByOwnerIdOrderByCreatedAtDescIdDesc(ownerId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional
-    public void clearHistory() {
-        historyRepository.deleteAll();
+    public void clearHistory(String ownerId) {
+        historyRepository.deleteByOwnerId(ownerId);
+    }
+
+    @Transactional
+    public int cleanupExpiredHistory() {
+        return historyRepository.deleteExpiredBefore(LocalDateTime.now().minusDays(historyRetentionDays));
     }
 
     public Set<String> getSupportedCurrencies() {

@@ -6,16 +6,7 @@
         <meta name="theme-color" content="#F6F8FC">
         <title>Conversor de Moedas</title>
         <link rel="icon" href="data:,">
-        <script>
-            try {
-                const saved = localStorage.getItem('currency-theme');
-                document.documentElement.dataset.theme = saved ||
-                    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.lang = localStorage.getItem('currency-language') === 'en' ? 'en' : 'pt-BR';
-            } catch (e) {
-                document.documentElement.dataset.theme = 'light';
-            }
-        </script>
+        <script th:src="@{/js/theme-init.js}"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,7 +25,7 @@
                 <nav class="nav" id="mainNav" aria-label="Navegação principal">
                     <a class="active" th:href="@{/}" data-i18n="navConvert" aria-current="page">Converter</a>
                     <a th:href="@{/historico}" data-i18n="navHistory">Histórico</a>
-                    <a th:href="@{/swagger-ui.html}" target="_blank" rel="noopener noreferrer">Swagger <span class="external-link-icon" aria-hidden="true">↗</span><span class="sr-only" data-i18n="newTabHint">(abre em uma nova guia)</span></a>
+                    <a th:if="${apiDocsEnabled}" th:href="@{/swagger-ui.html}" target="_blank" rel="noopener noreferrer">Swagger <span class="external-link-icon" aria-hidden="true">↗</span><span class="sr-only" data-i18n="newTabHint">(abre em uma nova guia)</span></a>
                     <a th:href="@{/sobre}" data-i18n="navAbout">Sobre</a>
                 </nav>
                 <div class="header-controls">

@@ -9,6 +9,7 @@ out/
 *.h2.db
 .env
 .env.*
+!.env.example
 application-local.properties
 node_modules/
 coverage/

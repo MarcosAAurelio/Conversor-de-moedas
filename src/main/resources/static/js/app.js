@@ -308,8 +308,10 @@ function formatData() {
     const d = row.dataset;
     row.querySelector(".history-created").textContent = formatDate(d.created, true);
     row.querySelector(".history-original").textContent = formatMoney(d.original, d.source);
-    row.querySelector(".history-pair").innerHTML =
-      '<span class="pair-pill">' + d.source + " → " + d.target + "</span>";
+    const pair = document.createElement("span");
+    pair.className = "pair-pill";
+    pair.textContent = d.source + " → " + d.target;
+    row.querySelector(".history-pair").replaceChildren(pair);
     row
       .querySelector(".history-rate")
       .replaceChildren(
