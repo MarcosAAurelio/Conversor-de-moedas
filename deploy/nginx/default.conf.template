@@ -17,15 +17,15 @@ http {
         "" $scheme;
     }
 
-    limit_req_zone $binary_remote_addr zone=site:10m rate=10r/s;
-    limit_req_zone $binary_remote_addr zone=sessions:10m rate=5r/m;
-    limit_req_zone $binary_remote_addr zone=conversions:10m rate=10r/m;
-    limit_req_zone $binary_remote_addr zone=quotes:10m rate=30r/m;
+    limit_req_zone $client_ip zone=site:10m rate=10r/s;
+    limit_req_zone $client_ip zone=sessions:10m rate=5r/m;
+    limit_req_zone $client_ip zone=conversions:10m rate=10r/m;
+    limit_req_zone $client_ip zone=quotes:10m rate=30r/m;
 
-    set_real_ip_from 172.16.0.0/12;
-    set_real_ip_from 10.0.0.0/8;
-    real_ip_header X-Forwarded-For;
-    real_ip_recursive on;
+    map $http_cf_connecting_ip $client_ip {
+        "" $remote_addr;
+        default $http_cf_connecting_ip;
+    }
 
     server {
         listen ${PORT};
@@ -48,8 +48,8 @@ http {
             limit_req zone=sessions burst=10 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
@@ -61,8 +61,8 @@ http {
             limit_req zone=conversions burst=8 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
@@ -74,8 +74,8 @@ http {
             limit_req zone=conversions burst=5 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
@@ -87,8 +87,8 @@ http {
             limit_req zone=conversions burst=8 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
@@ -100,8 +100,8 @@ http {
             limit_req zone=quotes burst=15 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
@@ -113,8 +113,8 @@ http {
             limit_req zone=site burst=30 nodelay;
             proxy_pass http://$app_upstream;
             proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-IP $client_ip;
+            proxy_set_header X-Forwarded-For $client_ip;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Proto $forwarded_proto;
             proxy_connect_timeout 3s;
