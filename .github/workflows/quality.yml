@@ -55,6 +55,9 @@ jobs:
       - name: Install JavaScript tooling
         run: npm ci
 
+      - name: Build Cloudflare Pages site
+        run: npm run build:pages
+
       - name: Check JavaScript and CSS
         run: npm run lint
 

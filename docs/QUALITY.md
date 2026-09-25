@@ -12,6 +12,7 @@ Comandos na raiz do projeto:
 
 ```powershell
 npm ci
+npm run build:pages
 npm run lint
 npm run knip
 npm run test:unit:coverage
@@ -21,7 +22,7 @@ npm run test:e2e
 .\mvnw.cmd clean verify
 ```
 
-Biome formata e analisa o JavaScript e CSS do front-end. Use `npm run format` para aplicar a formatação e `npm run lint` para verificar a formatação e as regras de lint. Knip procura arquivos e dependências sem uso. Commitlint verifica os títulos dos commits incluídos em cada PR contra Conventional Commits. ArchUnit impede dependências entre camadas que quebrariam a arquitetura atual. JUnit e MockMvc cobrem regras e integrações Java; Jest cobre as funções puras de interface; Playwright abre o sistema local e valida fluxos reais no Chromium. Stryker executa testes de mutação sobre a validação monetária usada pela tela.
+Biome formata e verifica o JavaScript e o CSS do front-end, o adaptador Pages e o script de build. Use `npm run format` para aplicar a formatação e `npm run lint` para verificar as regras. Knip procura arquivos e dependências sem uso. Commitlint verifica os títulos dos commits incluídos em cada PR contra Conventional Commits. ArchUnit impede dependências entre camadas que quebrariam a arquitetura atual. JUnit e MockMvc cobrem regras e integrações Java; Jest cobre as funções puras de interface; Playwright abre o sistema local e valida fluxos reais no Chromium. Stryker executa testes de mutação sobre a validação monetária usada pela tela.
 
 O CI também valida o Compose e as configurações do Nginx e Caddy, constrói a imagem de produção e o Dependabot monitora atualizações de dependências, ações e imagens de contêiner.
 
