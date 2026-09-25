@@ -4,6 +4,8 @@
     "includes": [
       "src/main/resources/static/js/**/*.js",
       "src/main/resources/static/css/**/*.css",
+      "cloudflare-pages/content/**/*.js",
+      "scripts/**/*.mjs",
       "tests/**/*.cjs",
       "!!.stryker-tmp",
       "!!stryker-tmp"

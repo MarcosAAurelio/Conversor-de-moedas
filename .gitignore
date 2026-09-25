@@ -13,6 +13,7 @@ out/
 application-local.properties
 node_modules/
 coverage/
+/cloudflare-pages/site/
 playwright-report/
 test-results/
 reports/

@@ -1,57 +1,50 @@
-# Publicar a versão estática no Cloudflare Pages
+# Publicar no Cloudflare Pages
 
-Este guia publica a versão estática do conversor usando o GitHub. O Cloudflare Pages entrega os arquivos HTML, CSS e JavaScript; não executa a aplicação Spring Boot.
+O Cloudflare Pages publica a versão estática do conversor. Esse serviço não executa o Spring Boot nem o código Java do projeto.
 
-## O que será publicado
+## Arquivos publicados
 
-- A pasta `cloudflare-pages/site` é um site estático completo e pronto para publicação.
-- Ela inclui cópias do CSS, das imagens e de scripts usados também pela aplicação Java. Essas cópias mantêm a página independente de um servidor Spring Boot.
-- O Pages não recebe o código Java, os arquivos de configuração do banco ou as imagens de build Docker como conteúdo do site.
-- A versão estática consulta a API Frankfurter diretamente no navegador e guarda até 100 conversões no `localStorage` do navegador.
-- O histórico local não sincroniza com outros navegadores ou dispositivos e pode ser apagado ao limpar os dados do site. Não use essa versão para guardar informações privadas.
-- A API REST, o Swagger e o banco PostgreSQL pertencem à aplicação Java original e não são executados no Pages.
+- As páginas específicas do Pages ficam em `cloudflare-pages/content`.
+- CSS, scripts compartilhados e a imagem do autor vêm de `src/main/resources/static`.
+- `npm run build:pages` combina esses arquivos em `cloudflare-pages/site`. A pasta de saída é gerada durante o build e não precisa ser commitada.
+- O site consulta a API pública Frankfurter no navegador. Ela não exige chave. O valor digitado e o histórico não são enviados à API; o navegador envia os códigos das moedas e o período solicitado ao gráfico.
+- O histórico fica no `localStorage` do navegador. Ele não sincroniza entre dispositivos e pode ser apagado junto com os dados do site.
+- A versão Pages não inclui a API REST, o Swagger ou o banco PostgreSQL da aplicação Java.
 
-O endpoint público do Frankfurter não exige chave de API; suas respostas e disponibilidade dependem do serviço externo. A requisição envia o par de moedas e o período do gráfico; o valor convertido e o histórico não são enviados à API. Consulte a [documentação do Frankfurter](https://frankfurter.dev/).
+## Configurar o Pages
 
-## Configurar o projeto no Cloudflare
-
-1. No painel Cloudflare, abra **Workers & Pages** e crie uma aplicação Pages conectada ao repositório `MarcosAAurelio/Conversor-de-moedas`.
-2. Use `main` como branch de produção.
-3. Selecione **None** como framework preset e deixe o diretório raiz no padrão do repositório.
-4. Configure:
+1. No Cloudflare, crie um projeto Pages conectado ao repositório `MarcosAAurelio/Conversor-de-moedas`.
+2. Defina `main` como branch de produção.
+3. Escolha **None** como framework preset e mantenha o diretório raiz do repositório.
+4. Configure os campos:
 
    | Campo | Valor |
    | --- | --- |
-   | Build command | deixe em branco |
+   | Build command | `npm run build:pages` |
    | Build output directory | `cloudflare-pages/site` |
 
-5. Salve e faça o primeiro deploy. O site ficará disponível no subdomínio `*.pages.dev`; não é necessário comprar domínio próprio para usar esse endereço.
+5. Salve e faça o primeiro deploy. O site ficará disponível em um endereço `*.pages.dev`; não é preciso configurar um domínio próprio.
 
-Depois que a mudança for integrada a `main`, o Git integration do Pages gera os próximos deploys a partir dessa branch. Pull requests também podem gerar URLs de preview, conforme as configurações do projeto Pages.
+O arquivo `.nvmrc` seleciona Node.js 24.21.0 para o build. O Cloudflare Pages aceita a versão de Node indicada por `.nvmrc`; consulte a [documentação do ambiente de build](https://developers.cloudflare.com/pages/configuration/build-image/). Depois que o PR for integrado a `main`, os próximos commits nessa branch iniciam novos builds.
 
 ## Custo e limites
 
-Esta configuração usa apenas arquivos estáticos e não cria Pages Functions, Worker, banco ou servidor Java. A Cloudflare informa que requisições a arquivos estáticos do Pages são gratuitas e ilimitadas; se Pages Functions forem adicionadas no futuro, as chamadas passam a contar para a cota de Workers. Veja [preços de Pages Functions](https://developers.cloudflare.com/pages/functions/pricing/) e [limites do Pages](https://developers.cloudflare.com/pages/platform/limits/).
+Esta configuração usa apenas arquivos estáticos, sem Pages Functions, Workers ou banco de dados. No plano gratuito, as requisições aos arquivos estáticos são gratuitas e ilimitadas, e há um limite de 500 builds por mês. Confira os [limites atuais do Pages](https://developers.cloudflare.com/pages/platform/limits/) antes de configurar outros recursos.
 
-O uso do `pages.dev` evita custo com domínio próprio. A API de cotações é um serviço separado, fora do controle deste repositório; esta adaptação não inclui chave, cobrança ou garantia de disponibilidade para ela.
+A API de cotações é um serviço separado, fora do controle deste repositório. Esta versão não usa chave de API nem envia o valor da conversão ao Frankfurter.
 
-## Atualizar os arquivos estáticos compartilhados
+## Gerar os arquivos localmente
 
-Quando alterar o CSS ou um script compartilhado na aplicação Java, copie a versão atualizada para a pasta Pages correspondente antes de publicar:
+Instale a versão de Node.js indicada por `.nvmrc` e execute na raiz do repositório:
 
-```powershell
-Copy-Item src/main/resources/static/css/styles.css cloudflare-pages/site/css/styles.css -Force
-Copy-Item src/main/resources/static/js/app.js cloudflare-pages/site/js/app.js -Force
-Copy-Item src/main/resources/static/js/currency-input.js cloudflare-pages/site/js/currency-input.js -Force
-Copy-Item src/main/resources/static/js/theme-init.js cloudflare-pages/site/js/theme-init.js -Force
-Copy-Item src/main/resources/static/js/about-tilt.js cloudflare-pages/site/js/about-tilt.js -Force
-Copy-Item src/main/resources/static/images/marcos-aurelio.jpeg cloudflare-pages/site/images/marcos-aurelio.jpeg -Force
+```sh
+npm run build:pages
 ```
 
-Não substitua `cloudflare-pages/site/js/pages-adapter.js`: ele conecta a versão estática ao serviço de cotações e ao histórico local. Os arquivos em `cloudflare-pages/site` são os próprios arquivos de saída e devem ser commitados.
+O script copia os arquivos compartilhados da aplicação Java e monta `cloudflare-pages/site`. Não edite essa pasta diretamente; faça mudanças nas páginas em `cloudflare-pages/content` ou nos arquivos originais em `src/main/resources/static` e gere a saída novamente.
 
 ## Cabeçalhos e segurança
 
-`cloudflare-pages/site/_headers` define Content Security Policy, bloqueia enquadramento do site e desativa recursos do navegador que não são usados. A política permite conexões somente ao próprio site e ao endpoint Frankfurter usado para taxas. Não há segredos no bundle estático.
+O arquivo `cloudflare-pages/content/_headers` define a Content Security Policy, impede que o site seja carregado em frames e desativa recursos do navegador que a aplicação não usa. A política permite conexões ao próprio site e à API Frankfurter. Não há segredos no conteúdo estático.
 
-O navegador recebe diretamente as requisições de cotações. Os dados do histórico permanecem no perfil local do navegador, sujeitos ao acesso de quem usa esse mesmo perfil.
+As cotações são consultadas diretamente pelo navegador. O histórico permanece no perfil local de quem usa o site.
