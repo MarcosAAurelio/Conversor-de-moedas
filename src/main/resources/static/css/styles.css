@@ -159,15 +159,15 @@ body,
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
+  display: block;
+  flex: 0 0 auto;
+  width: 64px;
   height: 38px;
-  border-radius: 12px;
-  background: var(--primary);
+  color: #111;
+}
+
+html[data-theme="dark"] .brand-mark {
   color: #fff;
-  font-size: 1.5rem;
-  line-height: 1;
 }
 
 .nav {
@@ -1603,7 +1603,7 @@ html[data-theme="dark"] .portfolio-cta {
     text-overflow: ellipsis;
   }
   .brand-mark {
-    width: 32px;
+    width: 48px;
     height: 32px;
   }
   .header-controls {
