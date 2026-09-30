@@ -16,6 +16,8 @@ As imagens mostram as páginas atuais do site publicado nos temas claro e escuro
 | Histórico | ![Histórico no tema claro](docs/screenshots/historico-claro.png) | ![Histórico no tema escuro](docs/screenshots/historico-escuro.png) |
 | Sobre | ![Página Sobre no tema claro](docs/screenshots/sobre-claro.png) | ![Página Sobre no tema escuro](docs/screenshots/sobre-escuro.png) |
 
+Capturas do conversor em tela de celular: [tema claro](docs/screenshots/conversor-mobile-claro.png) · [tema escuro](docs/screenshots/conversor-mobile-escuro.png).
+
 ## O que a versão publicada oferece
 
 - Conversão entre BRL, USD, EUR, GBP, JPY, CAD, ARS e CNY.
