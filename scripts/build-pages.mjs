@@ -14,6 +14,7 @@ if (!outputRoot.startsWith(`${pagesRoot}${sep}`)) {
 
 const sharedAssets = [
   { source: "css/styles.css", destination: "css/styles.css" },
+  { source: "images/logo-marcos-aurelio.svg", destination: "images/logo-marcos-aurelio.svg" },
   { source: "images/marcos-aurelio.jpeg", destination: "images/marcos-aurelio.jpeg" },
   { source: "js/about-tilt.js", destination: "js/about-tilt.js" },
   { source: "js/app.js", destination: "js/app.js" },
